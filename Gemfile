@@ -19,16 +19,26 @@ gem 'puma', '~> 4.1'
 # Use Active Storage variant
 # gem 'image_processing', '~> 1.2'
 
+gem 'awesome_print'
+gem 'pry-stack_explorer'
+gem 'rails_semantic_logger'
+
+group :development, :test do
+  # Call 'byebug' anywhere in the code to stop execution and get a debugger console
+  gem 'byebug', platforms: %i[mri mingw x64_mingw]
+  gem 'pry-byebug'
+  gem 'pry-state'
+  # gem 'pry-doc'
+  gem 'pry-rails'
+  gem 'pry-remote'
+  gem 'rspec-rails'
+end
+
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.4.2', require: false
 
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
 # gem 'rack-cors'
-
-group :development, :test do
-  # Call 'byebug' anywhere in the code to stop execution and get a debugger console
-  gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
-end
 
 group :development do
   gem 'listen', '>= 3.0.5', '< 3.2'
