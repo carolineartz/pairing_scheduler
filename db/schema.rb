@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_03_05_225757) do
+ActiveRecord::Schema.define(version: 2020_03_05_230412) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -19,6 +19,15 @@ ActiveRecord::Schema.define(version: 2020_03_05_225757) do
     t.string "display_name", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "pairings", force: :cascade do |t|
+    t.bigint "sprint_id", null: false
+    t.bigint "member1_id", null: false
+    t.bigint "member2_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["sprint_id"], name: "index_pairings_on_sprint_id"
   end
 
   create_table "projects", force: :cascade do |t|
@@ -37,5 +46,6 @@ ActiveRecord::Schema.define(version: 2020_03_05_225757) do
     t.index ["project_id"], name: "index_sprints_on_project_id"
   end
 
+  add_foreign_key "pairings", "sprints"
   add_foreign_key "sprints", "projects"
 end
