@@ -38,6 +38,7 @@ end
 
 group :test do
   gem 'database_cleaner-active_record'
+  gem 'shoulda-matchers'
 end
 
 # Reduces boot times through caching; required in config/boot.rb
