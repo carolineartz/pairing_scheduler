@@ -9,6 +9,8 @@
 #
 
 class Engineer < ApplicationRecord
+  validates :display_name, presence: true, unique: true
+
   def pairings(sprint = nil)
     Pairing
       .for_sprint(sprint)
