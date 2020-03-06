@@ -9,4 +9,14 @@
 #
 
 class Engineer < ApplicationRecord
+  def pairings(sprint = nil)
+    Pairing
+      .for_sprint(sprint)
+      .where(member1_id: id)
+      .or(
+        Pairing
+        .for_sprint(sprint)
+        .where(member2_id: id)
+      )
+  end
 end
