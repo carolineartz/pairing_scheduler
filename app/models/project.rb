@@ -15,13 +15,8 @@
 #
 
 class Project < ApplicationRecord
+  has_and_belongs_to_many :engineers
+
   has_many :sprints
   has_many :pairings, through: :sprints
-
-  def engineers
-    Engineer
-      .joins("JOIN pairings ON pairings.member1_id = engineers.id OR pairings.member2_id = engineers.id")
-      .merge(pairings)
-      .distinct
-  end
 end
