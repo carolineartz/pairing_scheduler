@@ -37,7 +37,7 @@ class Engineer < ApplicationRecord
   #
   # @param [Project] project to scope results
   #
-  # # @return [Pairing::ActiveRecord_Relation]
+  # @return [Pairing::ActiveRecord_Relation]
   #
   def pairings(project: nil)
     sprints = project&.sprints.presence || Sprint.all
