@@ -75,4 +75,57 @@ RSpec.describe Sprint, type: :model do
       end
     end
   end
+
+  let(:project) { FactoryBot.create(:project, :with_sprints, sprint_count: 1) }
+  let(:sprint) { project.sprints.first }
+
+  let(:engineers) do
+    FactoryBot.create_list(:engineer, 3).tap { |eng| project.engineers << eng }
+    project.engineers
+  end
+  let!(:eng_1) { engineers.first! }
+  let!(:eng_2) { engineers.second! }
+  let!(:eng_3) { engineers.third! }
+
+  describe "#paired_engineers" do
+    before do
+      pair = Pair.new(eng_1, eng_2)
+      FactoryBot.create(:pairing, sprint: sprint, pair: pair)
+    end
+
+    it "returns only the project engineers paired during the sprint" do
+      expect(sprint.paired_engineers).to contain_exactly(eng_1, eng_2)
+    end
+  end
+
+  describe "#solo_engineer" do
+    context "with an odd number of engineers" do
+      before do
+        pair = Pair.new(eng_1, eng_2)
+        FactoryBot.create(:pairing, sprint: sprint, pair: pair)
+      end
+
+      it "returns the engineer not part of a pair" do
+         expect(project.engineers.count).to be_odd
+         expect(sprint.solo_engineer).to eq(eng_3)
+      end
+    end
+
+    context "with an even number of engineers" do
+      before do
+        eng_4 = FactoryBot.create(:engineer)
+        project.engineers << eng_4
+
+        pair1 = Pair.new(eng_1, eng_2)
+        pair2 = Pair.new(eng_3, eng_4)
+        FactoryBot.create(:pairing, sprint: sprint, pair: pair1)
+        FactoryBot.create(:pairing, sprint: sprint, pair: pair2)
+      end
+
+      it "returns nil" do
+        expect(project.engineers.count).to be_even
+        expect(sprint.solo_engineer).to be_nil
+      end
+    end
+  end
 end

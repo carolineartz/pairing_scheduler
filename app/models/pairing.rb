@@ -37,9 +37,9 @@ class Pairing < ApplicationRecord
   delegate :members, to: :pair
 
   def self.build_for_pair(pair:, sprint:)
-    eng1, eng2 = pair.members
+    eng_1, eng_2 = pair.members
 
-    new(sprint: sprint, member1_id: eng1.id, member2_id: eng2.id)
+    new(sprint: sprint, member1_id: eng_1.id, member2_id: eng_2.id)
   end
 
   def self.create_for_pair!(pair:, sprint:)
@@ -49,28 +49,28 @@ class Pairing < ApplicationRecord
   private
 
   def project_membership
-    eng1, eng2 = members
+    eng_1, eng_2 = members
     not_on_project_msg = "Engineer has not been added to project."
 
-    unless sprint.project.engineers.include?(eng1)
-      errors.add(member1_id == eng1.id ? :member1_id : :member2_id, not_on_project_msg)
+    unless sprint.project.engineer_ids.include?(eng_1.id)
+      errors.add(member1_id == eng_1.id ? :member1_id : :member2_id, not_on_project_msg)
     end
 
-    unless sprint.project.engineers.include?(eng2)
-      errors.add(member2_id == eng2.id ? :member2_id : :member1_id, not_on_project_msg)
+    unless sprint.project.engineer_ids.include?(eng_2.id)
+      errors.add(member2_id == eng_2.id ? :member2_id : :member1_id, not_on_project_msg)
     end
   end
 
   def one_engineer_membership_per_sprint
-    eng1, eng2 = pair.members
+    eng_1, eng_2 = pair.members
     already_paired_msg = "Engineer already paired for sprint."
 
-    if eng1.pairing(sprint: sprint).present?
-      errors.add(member1_id == eng1.id ? :member1_id : :member2_id, already_paired_msg)
+    if eng_1.pairing(sprint: sprint).present?
+      errors.add(member1_id == eng_1.id ? :member1_id : :member2_id, already_paired_msg)
     end
 
-    if eng2.pairing(sprint: sprint).present?
-      errors.add(member2_id == eng2.id ? :member2_id : :member1_id, already_paired_msg)
+    if eng_2.pairing(sprint: sprint).present?
+      errors.add(member2_id == eng_2.id ? :member2_id : :member1_id, already_paired_msg)
     end
   end
 end
