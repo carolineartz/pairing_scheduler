@@ -20,19 +20,15 @@ RSpec.describe Engineer, type: :model do
   end
 
   describe "#pairing" do
-    let(:project) { FactoryBot.create(:project, start_date: Date.current, end_date: Date.current + 3.weeks) }
-    let(:engineers) do
-      FactoryBot.create_list(:engineer, 4).tap { |eng| project.engineers << eng }
-      project.engineers
-    end
+    let(:project) { create_project_with_engineers_and_sprints(engineer_count: 4, sprint_count: 3) }
 
-    let(:sprint1) { FactoryBot.create(:sprint, start_date: project.start_date, end_date: project.start_date + 3.days, project: project) }
-    let(:sprint2) { FactoryBot.create(:sprint, start_date: sprint1.end_date + 1.day, end_date: sprint1.end_date + 3.days, project: project) }
-    let(:sprint3) { FactoryBot.create(:sprint, start_date: sprint2.end_date + 1.day, end_date: sprint2.end_date + 3.days, project: project) }
+    let(:engineer) { project.engineers.first! }
+    let(:sprint1_partner) { project.engineers.second! }
+    let(:sprint2_partner) { project.engineers.third! }
 
-    let(:engineer) { engineers.first! }
-    let(:sprint1_partner) { engineers.second! }
-    let(:sprint2_partner) { engineers.third! }
+    let(:sprint1) { project.sprints.first! }
+    let(:sprint2) { project.sprints.second! }
+    let(:sprint3) { project.sprints.third! }
 
     before do
       FactoryBot.create(:pairing, pair: Pair.new(engineer, sprint1_partner), sprint: sprint1)
@@ -44,16 +40,43 @@ RSpec.describe Engineer, type: :model do
     end
 
     it "returns the correct pairing for the given sprint" do
-      expect(engineer.pairing(sprint: sprint1).pair).to eq(Pair.new(engineer, sprint1_partner))
-      expect(engineer.pairing(sprint: sprint2).pair).to eq(Pair.new(engineer, sprint2_partner))
+      expect(engineer.pairing(sprint: sprint1).members).to contain_exactly(engineer, sprint1_partner)
+      expect(engineer.pairing(sprint: sprint2).members).to contain_exactly(engineer, sprint2_partner)
     end
   end
 
   describe "#pairings" do
     context "unscoped" do
+      it "does" do
+      end
     end
 
     context "scoped to a specific project" do
     end
+  end
+
+  def create_project_with_engineers_and_sprints(engineer_count:, sprint_count:)
+    next_start_end_end_dates = lambda do |project, prev_sprint = nil|
+      if prev_sprint
+        { start_date: prev_sprint.end_date + 1.day, end_date: prev_sprint.end_date + 2.days }
+      else
+        { start_date: project.start_date, end_date: project.start_date + 1.day }
+      end
+    end
+
+    project = FactoryBot.create(:project, start_date: Date.current, end_date: Date.current + (sprint_count * 2).days)
+    FactoryBot.create_list(:engineer, engineer_count).tap { |eng| project.engineers << eng }
+
+    if sprint_count >= 1
+      FactoryBot.create(:sprint, project: project, **next_start_end_end_dates.call(project))
+    end
+
+    if sprint_count > 1
+      2.upto(sprint_count) do
+        FactoryBot.create(:sprint, project: project, **next_start_end_end_dates.call(project, Sprint.last))
+      end
+    end
+
+    project
   end
 end

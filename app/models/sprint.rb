@@ -54,18 +54,18 @@ class Sprint < ApplicationRecord
   end
 
   def no_sprint_overlap
-    other_sprints = project.sprints
+    other_sprints = project.sprints.where.not(id: id)
 
-    overlapping_msg = "Date cannot overlap with an sprint's dates for the same Project."
+    overlapping_msg = "Date cannot overlap with another sprint's dates for the same Project."
 
     # TODO: Figure out more efficient way to validate this
     other_sprints.each do |other_sprint|
       # +/- 1 day to be start/end day inclusive for triggering an error when checking for overlap
-      if start_date.between?(other_sprint.start_date - 1.day, other_sprint.end_date + 1.day)
+      if start_date.between?(other_sprint.start_date, other_sprint.end_date)
         errors.add(:start_date, overlapping_msg)
       end
 
-      if end_date.between?(other_sprint.start_date - 1.day, other_sprint.end_date + 1.day)
+      if end_date.between?(other_sprint.start_date, other_sprint.end_date)
         errors.add(:end_date, overlapping_msg)
       end
     end

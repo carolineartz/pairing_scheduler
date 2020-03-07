@@ -37,7 +37,7 @@ class Pairing < ApplicationRecord
   delegate :members, to: :pair
 
   def self.build_for_pair(pair:, sprint:)
-    eng1, eng2 = members
+    eng1, eng2 = pair.members
 
     new(sprint: sprint, member1_id: eng1.id, member2_id: eng2.id)
   end
