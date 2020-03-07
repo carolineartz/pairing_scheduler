@@ -20,11 +20,15 @@ RSpec.describe Engineer, type: :model do
   end
 
   describe "#pairing" do
-    let(:project) { create_project_with_engineers_and_sprints(engineer_count: 4, sprint_count: 3) }
+    let(:project) { FactoryBot.create(:project, :with_sprints, sprint_count: 3) }
+    let(:engineers) do
+      FactoryBot.create_list(:engineer, 4).tap { |eng| project.engineers << eng }
+      project.engineers
+    end
 
-    let(:engineer) { project.engineers.first! }
-    let(:sprint1_partner) { project.engineers.second! }
-    let(:sprint2_partner) { project.engineers.third! }
+    let(:engineer) { engineers.first! }
+    let(:sprint1_partner) { engineers.second! }
+    let(:sprint2_partner) { engineers.third! }
 
     let(:sprint1) { project.sprints.first! }
     let(:sprint2) { project.sprints.second! }
@@ -53,30 +57,5 @@ RSpec.describe Engineer, type: :model do
 
     context "scoped to a specific project" do
     end
-  end
-
-  def create_project_with_engineers_and_sprints(engineer_count:, sprint_count:)
-    next_start_end_end_dates = lambda do |project, prev_sprint = nil|
-      if prev_sprint
-        { start_date: prev_sprint.end_date + 1.day, end_date: prev_sprint.end_date + 2.days }
-      else
-        { start_date: project.start_date, end_date: project.start_date + 1.day }
-      end
-    end
-
-    project = FactoryBot.create(:project, start_date: Date.current, end_date: Date.current + (sprint_count * 2).days)
-    FactoryBot.create_list(:engineer, engineer_count).tap { |eng| project.engineers << eng }
-
-    if sprint_count >= 1
-      FactoryBot.create(:sprint, project: project, **next_start_end_end_dates.call(project))
-    end
-
-    if sprint_count > 1
-      2.upto(sprint_count) do
-        FactoryBot.create(:sprint, project: project, **next_start_end_end_dates.call(project, Sprint.last))
-      end
-    end
-
-    project
   end
 end
