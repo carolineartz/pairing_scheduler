@@ -39,7 +39,7 @@ RSpec.describe Sprint, type: :model do
       it "should not allow a start_date before its end_date" do
         sprint = FactoryBot.build(:sprint, start_date: Date.current, end_date: Date.yesterday)
 
-        sprint.valid?
+        expect(sprint).not_to be_valid
         error_messages = Hashie::Mash.new(sprint.errors.messages)
 
         expect(error_messages.start_date).to contain_exactly(/start date cannot occur after its end date/)
@@ -50,11 +50,11 @@ RSpec.describe Sprint, type: :model do
         sprint_before = FactoryBot.build(:sprint, project: project, start_date: Date.yesterday, end_date: Date.current)
         sprint_after = FactoryBot.build(:sprint, project: project, start_date: Date.tomorrow, end_date: Date.tomorrow + 1.day)
 
-        sprint_before.valid?
+        expect(sprint_before).not_to be_valid
         error_messages = Hashie::Mash.new(sprint_before.errors.messages)
         expect(error_messages.start_date).to contain_exactly(/Cannot begin before its Project start date/)
 
-        sprint_after.valid?
+        expect(sprint_after).not_to be_valid
         error_messages = Hashie::Mash.new(sprint_after.errors.messages)
         expect(error_messages.end_date).to contain_exactly(/Cannot end after its Project end date/)
       end
@@ -65,11 +65,11 @@ RSpec.describe Sprint, type: :model do
         sprint_starts_during = FactoryBot.build(:sprint, project: project, start_date: scheduled_sprint.start_date + 1.day, end_date: scheduled_sprint.end_date + 1.day)
         sprint_ends_during = FactoryBot.build(:sprint, project: project, start_date: scheduled_sprint.start_date - 1.day, end_date: scheduled_sprint.end_date - 1.day)
 
-        sprint_starts_during.valid?
+        expect(sprint_starts_during).not_to be_valid
         error_messages = Hashie::Mash.new(sprint_starts_during.errors.messages)
         expect(error_messages.start_date).to contain_exactly(/Date cannot overlap with another sprint/)
 
-        sprint_ends_during.valid?
+        expect(sprint_ends_during).not_to be_valid
         error_messages = Hashie::Mash.new(sprint_ends_during.errors.messages)
         expect(error_messages.end_date).to contain_exactly(/Date cannot overlap with another sprint/)
       end
