@@ -30,7 +30,7 @@ class Pairing < ApplicationRecord
 
   validates :member1_id, :member2_id, :sprint_id, presence: true
   validate :project_membership
-  validate :one_engineer_membership_per_sprint, on: :new
+  validate :one_engineer_membership_per_sprint
 
   scope :for_sprint, ->(sprint) { where(sprint: sprint) }
 
@@ -49,6 +49,8 @@ class Pairing < ApplicationRecord
   private
 
   def project_membership
+    return unless member1_id.present? && member2_id.present? && sprint_id.present?
+
     eng_1, eng_2 = members
     not_on_project_msg = "Engineer has not been added to project."
 
@@ -62,9 +64,10 @@ class Pairing < ApplicationRecord
   end
 
   def one_engineer_membership_per_sprint
+    return unless member1_id.present? && member2_id.present? && sprint_id.present?
+
     eng_1, eng_2 = pair.members
     already_paired_msg = "Engineer already paired for sprint."
-
     if eng_1.pairing(sprint: sprint).present?
       errors.add(member1_id == eng_1.id ? :member1_id : :member2_id, already_paired_msg)
     end
