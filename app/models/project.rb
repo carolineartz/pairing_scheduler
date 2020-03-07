@@ -17,6 +17,8 @@
 class Project < ApplicationRecord
   has_and_belongs_to_many :engineers
 
-  has_many :sprints, -> { order(:start_date) }
+  has_many :sprints, -> { order(:start_date) }, inverse_of: :project
   has_many :pairings, through: :sprints
+
+  validates :start_date, :end_date, :name, presence: true
 end

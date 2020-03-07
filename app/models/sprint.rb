@@ -23,6 +23,8 @@ class Sprint < ApplicationRecord
 
   has_many :pairings
 
+  validates :end_date, :start_date, :project_id, presence: true
+
   validate :start_date_before_end_date
   validate :within_project_bounds
   validate :no_sprint_overlap
@@ -50,10 +52,25 @@ class Sprint < ApplicationRecord
   private
 
   def start_date_before_end_date
+    return unless start_date.present? && end_date.present?
     errors.add(:start_date, "A Sprint's start date cannot occur after its end date.") unless end_date.after?(start_date)
   end
 
+  def within_project_bounds
+    return unless project.present? && start_date.present? && end_date.present?
+
+    if start_date.before?(project.start_date)
+      errors.add(:start_date, "Cannot begin before its Project start date.")
+    end
+
+    if end_date.after?(project.end_date)
+      errors.add(:end_date, "Cannot end after its Project end date.")
+    end
+  end
+
   def no_sprint_overlap
+    return unless project.present? && start_date.present? && end_date.present?
+
     other_sprints = project.sprints.where.not(id: id)
 
     overlapping_msg = "Date cannot overlap with another sprint's dates for the same Project."
@@ -68,16 +85,6 @@ class Sprint < ApplicationRecord
       if end_date.between?(other_sprint.start_date, other_sprint.end_date)
         errors.add(:end_date, overlapping_msg)
       end
-    end
-  end
-
-  def within_project_bounds
-    if start_date.before?(project.start_date)
-      errors.add(:start_date, "Cannot begin before its Project start date.")
-    end
-
-    if end_date.after?(project.end_date)
-      errors.add(:end_date, "Cannot end after its Project end date.")
     end
   end
 end
