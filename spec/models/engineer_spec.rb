@@ -50,12 +50,47 @@ RSpec.describe Engineer, type: :model do
   end
 
   describe "#pairings" do
+    let(:project1) { FactoryBot.create(:project, :with_sprints, sprint_count: 3) }
+    let(:project2) { FactoryBot.create(:project, :with_sprints, sprint_count: 3, start_date: project1.end_date + 2.days) }
+
+    let(:engineers) do
+      FactoryBot.create_list(:engineer, 4).tap do |eng|
+        project1.engineers << eng
+        project2.engineers << eng
+      end
+    end
+
+    let(:engineer) { engineers[0] }
+    let(:proj1_sprint1_partner) { engineers[1] }
+    let(:proj1_sprint2_partner) { engineers[2] }
+    let(:proj2_sprint1_partner) { engineers[3] }
+    let(:proj2_sprint2_partner) { engineers[2] }
+
+    let!(:pairing1_proj1) { FactoryBot.create(:pairing, pair: Pair.new(engineer, proj1_sprint1_partner), sprint: project1.sprints.first!) }
+    let!(:pairing2_proj1) { FactoryBot.create(:pairing, pair: Pair.new(engineer, proj1_sprint2_partner), sprint: project1.sprints.second!) }
+    let!(:pairing3_proj2) { FactoryBot.create(:pairing, pair: Pair.new(engineer, proj2_sprint1_partner), sprint: project2.sprints.first!) }
+    let!(:pairing4_proj2) { FactoryBot.create(:pairing, pair: Pair.new(engineer, proj2_sprint2_partner), sprint: project2.sprints.second!) }
+    # a pairing that doesn't include the subject engineer
+    let!(:other_pairing) { FactoryBot.create(:pairing, pair: Pair.new(proj2_sprint1_partner, proj1_sprint1_partner), sprint: project2.sprints.second!) }
+
     context "unscoped" do
-      it "does" do
+      it "returns all of an engineer's pairings across all projects" do
+        expect(engineer.pairings).to contain_exactly(
+          pairing1_proj1,
+          pairing2_proj1,
+          pairing3_proj2,
+          pairing4_proj2
+        )
       end
     end
 
     context "scoped to a specific project" do
+      it "returns all of an engineer's pairings for a specific project" do
+        expect(engineer.pairings(project: project2)).to contain_exactly(
+          pairing3_proj2,
+          pairing4_proj2
+        )
+      end
     end
   end
 end
