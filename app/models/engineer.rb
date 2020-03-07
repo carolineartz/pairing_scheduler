@@ -13,13 +13,12 @@ class Engineer < ApplicationRecord
 
   validates :display_name, presence: true, uniqueness: true
 
-
   #
   # An engineer's pairing for a given sprint, if exists
   #
   # @param [Sprint] sprint
   #
-  # @return [Pairing,nil]
+  # @return [Pairing, nil]
   #
   def pairing(sprint:)
     Pairing
@@ -34,20 +33,22 @@ class Engineer < ApplicationRecord
   end
 
   #
-  # All pairings for an engineer, optionally scoped to a given project
+  # All pairings for an engineer, optionally scoped to sprints a given project
   #
   # @param [Project] project to scope results
   #
-  # @return [ActiveRecord::Relation<Pairing>]
+  # # @return [Pairing::ActiveRecord_Relation]
   #
   def pairings(project: nil)
+    sprints = project&.sprints.presence || Sprint.all
+
     Pairing
-      .joins(sprint: :project)
-      .where(member1_id: id, sprint: { project: project || Project.all.ids })
+      .for_sprint(sprints)
+      .where(member1_id: id)
       .or(
         Pairing
-        .joins(sprint: :project)
-        .where(member2_id: id, sprint: { project: project || Project.all.ids })
+          .for_sprint(sprints)
+          .where(member2_id: id)
       )
   end
 end

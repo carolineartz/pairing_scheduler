@@ -19,6 +19,8 @@
 #
 
 class Pairing < ApplicationRecord
+  attr_readonly :member1_id, :member2_id, :sprint_id
+
   composed_of :pair,
     class_name: "Pair",
     mapping: [%w(member1_id members), %w(member2_id members)],
@@ -27,8 +29,8 @@ class Pairing < ApplicationRecord
   belongs_to :sprint
 
   validates :member1_id, :member2_id, :sprint_id, presence: true
-  validate :project_members
-  validate :one_engineer_pair_membership_per_sprint, on: :new
+  validate :project_membership
+  validate :one_engineer_membership_per_sprint, on: :new
 
   scope :for_sprint, ->(sprint) { where(sprint: sprint) }
 
@@ -46,7 +48,7 @@ class Pairing < ApplicationRecord
 
   private
 
-  def project_members
+  def project_membership
     eng1, eng2 = members
     not_on_project_msg = "Engineer has not been added to project."
 
@@ -59,7 +61,7 @@ class Pairing < ApplicationRecord
     end
   end
 
-  def one_engineer_pair_membership_per_sprint
+  def one_engineer_membership_per_sprint
     eng1, eng2 = pair.members
     already_paired_msg = "Engineer already paired for sprint."
 
