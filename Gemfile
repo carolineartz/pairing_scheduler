@@ -22,6 +22,7 @@ gem 'puma', '~> 4.1'
 gem 'awesome_print'
 gem 'pry-stack_explorer'
 gem 'rails_semantic_logger'
+gem 'awesome_print'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
@@ -31,6 +32,7 @@ group :development, :test do
   # gem 'pry-doc'
   gem 'pry-rails'
   gem 'pry-remote'
+  gem "pry-rescue"
   gem 'rspec-rails'
   gem 'faker'
   gem 'factory_bot_rails'
@@ -40,6 +42,8 @@ group :test do
   gem 'database_cleaner-active_record'
   gem 'shoulda-matchers'
 end
+
+gem "hashie"
 
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.4.2', require: false
