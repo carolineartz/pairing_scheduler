@@ -76,50 +76,70 @@ RSpec.describe Sprint, type: :model do
     end
   end
 
-  let(:project) { FactoryBot.create(:project, :with_sprints, sprint_count: 1) }
+  let(:project) { FactoryBot.create(:project, :with_sprints, :with_engineers, sprint_count: 5, engineer_count: 9) }
   let(:sprint) { project.sprints.first }
+  let(:engineers) { project.engineers }
 
-  let(:engineers) do
-    FactoryBot.create_list(:engineer, 3).tap { |eng| project.engineers << eng }
-    project.engineers
-  end
   let!(:eng_1) { engineers.first! }
   let!(:eng_2) { engineers.second! }
   let!(:eng_3) { engineers.third! }
+  let!(:eng_4) { engineers.fourth! }
+  let!(:eng_5) { engineers.fifth! }
+  let!(:eng_6) { engineers.offset(5).first! }
+  let!(:eng_7) { engineers.offset(5).second! }
+  let!(:eng_8) { engineers.offset(5).third! }
+  let!(:eng_9) { engineers.offset(5).fourth! }
 
   describe "#paired_engineers" do
     before do
-      pair = Pair.new(eng_1, eng_2)
-      FactoryBot.create(:pairing, sprint: sprint, pair: pair)
+      pair_1 = Pair.new(eng_1, eng_6)
+      pair_2 = Pair.new(eng_8, eng_3)
+
+      FactoryBot.create(:pairing, sprint: sprint, pair: pair_1)
+      FactoryBot.create(:pairing, sprint: sprint, pair: pair_2)
     end
 
     it "returns only the project engineers paired during the sprint" do
-      expect(sprint.paired_engineers).to contain_exactly(eng_1, eng_2)
+      expect(sprint.paired_engineers).to contain_exactly(eng_1, eng_6, eng_8, eng_3)
     end
   end
 
   describe "#solo_engineer" do
     context "with an odd number of engineers" do
       before do
-        pair = Pair.new(eng_1, eng_2)
-        FactoryBot.create(:pairing, sprint: sprint, pair: pair)
+        pair_1 = Pair.new(eng_2, eng_8)
+        pair_2 = Pair.new(eng_5, eng_6)
+        pair_3 = Pair.new(eng_1, eng_9)
+        pair_4 = Pair.new(eng_3, eng_7)
+
+        FactoryBot.create(:pairing, sprint: sprint, pair: pair_1)
+        FactoryBot.create(:pairing, sprint: sprint, pair: pair_2)
+        FactoryBot.create(:pairing, sprint: sprint, pair: pair_3)
+        FactoryBot.create(:pairing, sprint: sprint, pair: pair_4)
       end
 
       it "returns the engineer not part of a pair" do
          expect(project.engineers.count).to be_odd
-         expect(sprint.solo_engineer).to eq(eng_3)
+         expect(sprint.solo_engineer).to eq(eng_4)
       end
     end
 
     context "with an even number of engineers" do
       before do
-        eng_4 = FactoryBot.create(:engineer)
-        project.engineers << eng_4
+        eng_10 = FactoryBot.create(:engineer)
+        project.engineers << eng_10
 
-        pair1 = Pair.new(eng_1, eng_2)
-        pair2 = Pair.new(eng_3, eng_4)
-        FactoryBot.create(:pairing, sprint: sprint, pair: pair1)
-        FactoryBot.create(:pairing, sprint: sprint, pair: pair2)
+        pair_1 = Pair.new(eng_2, eng_4)
+        pair_2 = Pair.new(eng_5, eng_7)
+        pair_3 = Pair.new(eng_1, eng_9)
+        pair_4 = Pair.new(eng_3, eng_6)
+        pair_5 = Pair.new(eng_8, eng_10)
+
+        FactoryBot.create(:pairing, sprint: sprint, pair: pair_1)
+        FactoryBot.create(:pairing, sprint: sprint, pair: pair_2)
+        FactoryBot.create(:pairing, sprint: sprint, pair: pair_3)
+        FactoryBot.create(:pairing, sprint: sprint, pair: pair_4)
+        FactoryBot.create(:pairing, sprint: sprint, pair: pair_5)
       end
 
       it "returns nil" do
