@@ -6,13 +6,15 @@ class Pair
 
   attr_reader :members
 
-  def_delegators :@members, :<=>
+  def_delegators :combined_id, :<=>
 
   def initialize(eng1, eng2)
-    @members = [eng1, eng2].sort_by(&:id)
+    @members = [eng1, eng2]
   end
 
-  def ==(other)
-    other.members.map(&:id) == members.map(&:id)
+  private
+
+  def combined_id
+    @combined_id ||= members.map(&:id).map(&:to_s).sort.join("-")
   end
 end
