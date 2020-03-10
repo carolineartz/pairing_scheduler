@@ -31,15 +31,18 @@ class ProjectSprintScheduler
 
         last_sprint.save!
       rescue ActiveRecord::RecordInvalid => e
-        if last_sprint.errors[:end_date].include?("Cannot end after its Project end date.")
+        if last_sprint.errors[:end_date].present? && last_sprint.errors[:end_date].include?("Cannot end after its Project end date.")
           project.end_date = last_sprint.end_date
           project.save!
           project.reload
+          last_sprint.save!
+        else
+          raise e
         end
-
-        last_sprint.save!
       end
     end
+
+    true
   end
 
   private
