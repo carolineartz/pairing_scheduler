@@ -48,6 +48,9 @@ gem "hashie"
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.4.2', require: false
 
+# https://github.com/ddollar/foreman/wiki/Don't-Bundle-Foreman
+# gem 'foreman'
+
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
 # gem 'rack-cors'
 

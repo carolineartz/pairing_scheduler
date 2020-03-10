@@ -1,0 +1,10 @@
+{
+  "name": "pairing-scheduler",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Caroline Artz <ceartz@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "dev": "cd frontend && yarn start"
+    }
+}
