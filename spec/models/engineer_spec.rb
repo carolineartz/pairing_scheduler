@@ -20,11 +20,8 @@ RSpec.describe Engineer, type: :model do
   end
 
   describe "#pairing" do
-    let(:project) { FactoryBot.create(:project, :with_sprints, sprint_count: 3) }
-    let(:engineers) do
-      FactoryBot.create_list(:engineer, 4).tap { |eng| project.engineers << eng }
-      project.engineers
-    end
+    let(:project) { FactoryBot.create(:project, :with_sprints, :with_engineers, sprint_count: 3, engineer_count: 4) }
+    let(:engineers) { project.engineers }
 
     let(:engineer) { engineers.first! }
     let(:sprint1_partner) { engineers.second! }
@@ -50,15 +47,9 @@ RSpec.describe Engineer, type: :model do
   end
 
   describe "#pairings" do
-    let(:project1) { FactoryBot.create(:project, :with_sprints, sprint_count: 3) }
-    let(:project2) { FactoryBot.create(:project, :with_sprints, sprint_count: 3, start_date: project1.end_date + 2.days) }
-
-    let(:engineers) do
-      FactoryBot.create_list(:engineer, 4).tap do |eng|
-        project1.engineers << eng
-        project2.engineers << eng
-      end
-    end
+    let(:engineers) { FactoryBot.create_list(:engineer, 4) }
+    let(:project1) { FactoryBot.create(:project, :with_sprints, :with_engineers, members: engineers, sprint_count: 3) }
+    let(:project2) { FactoryBot.create(:project, :with_sprints, :with_engineers, members: engineers, sprint_count: 3, start_date: project1.end_date + 2.days) }
 
     let(:engineer) { engineers[0] }
     let(:proj1_sprint1_partner) { engineers[1] }
