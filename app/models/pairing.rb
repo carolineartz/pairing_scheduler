@@ -43,7 +43,7 @@ class Pairing < ApplicationRecord
   end
 
   def self.create_for_pair!(pair:, sprint:)
-    build_for_pair(pair, sprint).save!
+    build_for_pair(pair: pair, sprint: sprint).save!
   end
 
   private
