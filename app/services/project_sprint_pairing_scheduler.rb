@@ -5,7 +5,7 @@ class ProjectSprintPairingScheduler
     @project = project
   end
 
-  def schedule
+  def schedule!
     eligible_sprints = project.sprints.future.or(project.sprints.current).to_a
 
     engs = project.engineers.to_a

@@ -29,6 +29,11 @@ class Sprint < ApplicationRecord
   validate :within_project_bounds
   validate :no_sprint_overlap
 
+
+  scope :future, -> { where("start_date > :today", today: Date.current) }
+  scope :current, -> { where("start_date <= :today AND end_date >= :today", today: Date.current) }
+  scope :past, -> { where("end_date < :today", today: Date.current) }
+
   #
   # All the project engineers who are members of a pair during this sprint.
   #
