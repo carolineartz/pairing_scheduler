@@ -5,6 +5,7 @@ class ProjectSprintScheduler
     @project = project
   end
 
+  # TODO: should be a bang name
   def add_sprints(sprint_count:, sprint_days: 5)
     return unless sprint_count > 0
 
