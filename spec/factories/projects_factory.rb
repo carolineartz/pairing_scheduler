@@ -40,9 +40,10 @@ FactoryBot.define do
     trait :with_engineers do
       transient do
         engineer_count { 4 }
+        members { FactoryBot.create_list(:engineer, engineer_count) }
 
         after(:create) do |project, evaluator|
-          FactoryBot.create_list(:engineer, evaluator.engineer_count).tap do |eng|
+          evaluator.members.to_a.each do |eng|
             project.engineers << eng
           end
         end
