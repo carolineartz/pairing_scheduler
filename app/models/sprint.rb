@@ -39,14 +39,12 @@ class Sprint < ApplicationRecord
   end
 
   #
-  # The engineer working solo during this sprint, if exists.
+  # The engineers working solo during this sprint, if exists.
   #
-  # @return [Engineer, nil] should be present for project sprints with an odd number of (working) engineers
+  # @return [Array<Engineer>, nil] should be present for project sprints with an odd number of (working) engineers
   #
-  def solo_engineer
-    return if project.engineers.length.even?
-
-    (project.engineers - paired_engineers).first
+  def solo_engineers
+    project.engineers - paired_engineers
   end
 
   private
