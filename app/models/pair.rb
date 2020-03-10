@@ -6,15 +6,14 @@ class Pair
 
   attr_reader :members
 
-  def_delegators :combined_id, :<=>
+  def_delegators :@combined_id, :<=>
 
   def initialize(eng1, eng2)
     @members = [eng1, eng2]
+    @combined_id = @members.map(&:id).map(&:to_s).sort.join("-")
   end
 
-  private
-
-  def combined_id
-    @combined_id ||= members.map(&:id).map(&:to_s).sort.join("-")
+  def eql?(other)
+    other == self
   end
 end
