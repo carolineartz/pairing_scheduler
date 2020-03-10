@@ -104,7 +104,7 @@ RSpec.describe Sprint, type: :model do
     end
   end
 
-  describe "#solo_engineer" do
+  describe "#solo_engineers" do
     context "with an odd number of engineers" do
       before do
         pair_1 = Pair.new(eng_2, eng_8)
@@ -118,9 +118,9 @@ RSpec.describe Sprint, type: :model do
         FactoryBot.create(:pairing, sprint: sprint, pair: pair_4)
       end
 
-      it "returns the engineer not part of a pair" do
+      it "returns a collection with only the engineer not part of a pair" do
          expect(project.engineers.count).to be_odd
-         expect(sprint.solo_engineer).to eq(eng_4)
+         expect(sprint.solo_engineers).to eq([eng_4])
       end
     end
 
@@ -144,7 +144,7 @@ RSpec.describe Sprint, type: :model do
 
       it "returns nil" do
         expect(project.engineers.count).to be_even
-        expect(sprint.solo_engineer).to be_nil
+        expect(sprint.solo_engineers).to be_empty
       end
     end
   end
