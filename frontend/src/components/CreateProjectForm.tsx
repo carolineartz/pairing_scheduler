@@ -41,7 +41,7 @@ export const CreateProjectForm = ({ engineers, onSubmit }: CreateProjectFormProp
     <Form
       onReset={(event: React.SyntheticEvent) => console.log(event)}
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      onSubmit={({ value, touched }: any) => onSubmit({ ...value, start_date: formatISO(date) })}
+      onSubmit={({ value }: any) => onSubmit({ ...value, start_date: formatISO(date) })}
     >
       <FormField
         label="Sprint Count"

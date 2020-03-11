@@ -6,6 +6,8 @@ import { ThemeType } from 'grommet/themes/base'
 import { deepFreeze } from 'grommet/utils'
 import { CreateProjectForm } from './components/CreateProjectForm'
 
+import { fetchProjects } from './api'
+
 import 'react-date-range/dist/styles.css' // main style file
 import 'react-date-range/dist/theme/default.css' // theme css file
 import styled from 'styled-components'
@@ -26,40 +28,42 @@ const theme: ThemeType = deepFreeze({
 })
 
 type PairingSchedulerAppState = {
+  remote: RemoteDataStatus
   activeTabIndex: number
-  activeProject: Project | null
-  projects: Project[]
+  // activeProject: Project | null
+  projects: Extract<Project, 'name'>[]
   engineers: Engineer[]
+  project: Project | null
 }
 
 export default class App extends React.Component<{}, PairingSchedulerAppState> {
   state = {
+    remote: 'loading' as RemoteDataStatus,
     activeTabIndex: 0,
-    activeProject: null,
+    // activeProject: null,
     projects: [],
     engineers: [],
+    project: null,
   }
 
   componentDidMount() {
-    fetch('api/projects')
-      .then(resp => {
-        resp
-          .json()
-          .then(
-            ({
-              projects,
-              engineers,
-            }: {
-              projects: Array<{ name: string }>
-              engineers: Array<{ name: string }>
-            }) => {
-              this.setState({ projects, engineers })
-            }
-          )
-      })
-      .catch(err => {
-        console.log(err)
-      })
+    this.fetchInitialData()
+  }
+
+  fetchInitialData = async () => {
+    try {
+      const result = await fetchProjects()
+
+      switch (result.remote) {
+        case 'success':
+          this.setState({ remote: 'success', ...result.data })
+          break
+        case 'failure':
+          this.setState({ remote: 'failure' })
+      }
+    } catch (e) {
+      this.setState({ remote: 'failure' })
+    }
   }
 
   handleSubmitCreateProject = ({
