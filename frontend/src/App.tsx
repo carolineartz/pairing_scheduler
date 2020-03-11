@@ -61,14 +61,14 @@ export default class App extends React.Component<{}, PairingSchedulerAppState> {
               plain
               title={
                 <Button
+                  as="span"
                   primary
                   onClick={(event: React.MouseEvent) => event.preventDefault()}
                   label="Create Project"
                 />
               }
             >
-              <Box width="large">
-
+              <Box pad="small" width="large" margin="auto">
                 <CreateProjectForm />
               </Box>
             </Tab>
@@ -88,9 +88,14 @@ export default class App extends React.Component<{}, PairingSchedulerAppState> {
 
 const ProjectListMenu = styled(Tabs)`
   flex-direction: row;
+  width: 100%;
 
   /* FIXME: this is ugly */
   [class*='StyledTabs__StyledTabsHeader'] {
     flex-direction: column;
+  }
+
+  [class*='StyledTabs__StyledTabPanel'] {
+    flex-grow: 1;
   }
 `

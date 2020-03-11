@@ -46,12 +46,16 @@ export const CreateProjectForm = () => {
         <EngineerSelect initialOptions={['caroline', 'josh']} name="engineer_names" />
       </FormField>
 
-      <Calendar
-        // minDate={startOfValidDates}
-        // disabledDates={invalidDates}
-        date={date}
-        onChange={(evt: any) => setDate(evt)}
-      />
+      <FormField label="Start Date">
+        <Box align="start">
+          <Calendar
+            // minDate={startOfValidDates}
+            // disabledDates={invalidDates}
+            date={date}
+            onChange={(evt: any) => setDate(evt)}
+          />
+        </Box>
+      </FormField>
       <Box direction="row" justify="between" margin={{ top: 'medium' }}>
         <Button type="submit" label="Create" primary />
       </Box>
