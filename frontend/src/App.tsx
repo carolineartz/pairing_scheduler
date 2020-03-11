@@ -24,32 +24,47 @@ const theme: ThemeType = deepFreeze({
   },
 })
 
-type Project = {
-  name: string
-}
-
 type PairingSchedulerAppState = {
   activeTabIndex: number
   activeProject: Project | null
   projects: Project[]
+  engineers: Engineer[]
 }
 
 export default class App extends React.Component<{}, PairingSchedulerAppState> {
   state = {
     activeTabIndex: 0,
     activeProject: null,
-    projects: [
-      {
-        name: 'Project-1',
-      },
-    ],
+    projects: [],
+    engineers: [],
   }
 
   componentDidMount() {
-    console.log('mounted')
+    fetch('api/projects')
+      .then(resp => {
+        resp
+          .json()
+          .then(
+            ({
+              projects,
+              engineers,
+            }: {
+              projects: Array<{ name: string }>
+              engineers: Array<{ display_name: string }>
+            }) => {
+              const engs = engineers.map(datum => ({ name: datum.display_name }))
+              // debugger
+              this.setState({ projects, engineers: engs })
+            }
+          )
+      })
+      .catch(err => {
+        console.log(err)
+      })
   }
 
   render() {
+    console.log(this.state)
     return (
       <Grommet theme={theme} full={true}>
         <Box pad="medium" direction="row" fill>
@@ -69,7 +84,7 @@ export default class App extends React.Component<{}, PairingSchedulerAppState> {
               }
             >
               <Box pad="small" width="large" margin="auto">
-                <CreateProjectForm />
+                <CreateProjectForm engineers={this.state.engineers} />
               </Box>
             </Tab>
             {this.state.projects.map((project: Project, i: number) => {

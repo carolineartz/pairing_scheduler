@@ -2,9 +2,6 @@ import * as React from 'react'
 
 import { Box, Button, Form, FormField } from 'grommet'
 import { EngineerSelect } from './create_project_form/EngineerSelect'
-// import { ProjectStartDatePicker } from './create_project_form/ProjectStartDatePicker'
-
-// import { Box, Button, TextInput, Text, Select, TextInputProps } from 'grommet'
 
 import {
   eachDayOfInterval,
@@ -16,7 +13,11 @@ import {
 } from 'date-fns'
 import { Calendar } from 'react-date-range'
 
-export const CreateProjectForm = () => {
+type CreateProjectFormProps = {
+  engineers: Engineer[]
+}
+
+export const CreateProjectForm = ({ engineers }: CreateProjectFormProps) => {
   const startOfValidDates = startOfWeek(startOfToday())
   const endOfValidDates = addToDate(startOfValidDates, { months: 6 })
   const invalidDates = eachDayOfInterval({
@@ -43,7 +44,12 @@ export const CreateProjectForm = () => {
         type="number"
       />
       <FormField name="engineer_names" label="Engineering Team">
-        <EngineerSelect initialOptions={['caroline', 'josh']} name="engineer_names" />
+        {engineers.length > 0 && (
+          <EngineerSelect
+            initialOptions={engineers.map((eng: Engineer) => eng.name)}
+            name="engineer_names"
+          />
+        )}
       </FormField>
 
       <FormField label="Start Date">

@@ -3,9 +3,9 @@ class Api::ProjectsController < ApplicationController
 
   # GET /projects
   def index
-    @projects = Project.all
+    projects = Project.all
 
-    render json: @projects
+    render json: serialize_with_all_engineers(projects)
   end
 
   # GET /projects/1
@@ -37,6 +37,13 @@ class Api::ProjectsController < ApplicationController
       :sprint_count,
       engineer_names: []
     )
+  end
+
+  def serialize_with_all_engineers(projects)
+    {
+      projects: projects.as_json,
+      engineers: Engineer.all.as_json
+    }
   end
 
   def serialize_with_associated(projects)
