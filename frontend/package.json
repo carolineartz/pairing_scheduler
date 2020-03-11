@@ -47,10 +47,13 @@
     "prettier": "^1.19.1",
     "prettier-eslint": "^9.0.1",
     "react": "^16.13.0",
-    "react-date-range": "^1.0.3",
+    "react-date-range": "1.0.0-beta2",
     "react-dom": "^16.13.0",
     "react-scripts": "3.4.0",
     "styled-components": "^5.0.1",
     "typescript": "~3.7.2"
+  },
+  "dependencies": {
+    "@types/react-date-range": "^0.94.4"
   }
 }

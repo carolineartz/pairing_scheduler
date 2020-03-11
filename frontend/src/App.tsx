@@ -1,12 +1,13 @@
 import * as React from 'react'
 
-import { Grommet, Box } from 'grommet'
+import { Grommet, Box, Button, Tabs, Tab } from 'grommet'
 import { ThemeType } from 'grommet/themes/base'
 import { deepFreeze } from 'grommet/utils'
-import { CreateProjectForm } from "./components/CreateProjectForm"
+import { CreateProjectForm } from './components/CreateProjectForm'
 
 import 'react-date-range/dist/styles.css' // main style file
 import 'react-date-range/dist/theme/default.css' // theme css file
+import styled from 'styled-components'
 
 const theme: ThemeType = deepFreeze({
   global: {
@@ -23,12 +24,73 @@ const theme: ThemeType = deepFreeze({
   },
 })
 
-const App = () => (
-  <Grommet theme={theme} full={true}>
-    <Box pad="medium">
-      <CreateProjectForm />
-    </Box>
-  </Grommet>
-)
+type Project = {
+  name: string
+}
 
-export default App
+type PairingSchedulerAppState = {
+  activeTabIndex: number
+  activeProject: Project | null
+  projects: Project[]
+}
+
+export default class App extends React.Component<{}, PairingSchedulerAppState> {
+  state = {
+    activeTabIndex: 0,
+    activeProject: null,
+    projects: [
+      {
+        name: 'Project-1',
+      },
+    ],
+  }
+
+  componentDidMount() {
+    console.log('mounted')
+  }
+
+  render() {
+    return (
+      <Grommet theme={theme} full={true}>
+        <Box pad="medium" direction="row" fill>
+          <ProjectListMenu
+            activeIndex={this.state.activeTabIndex}
+            onActive={(nextIndex: number) => this.setState({ activeTabIndex: nextIndex })}
+          >
+            <Tab
+              plain
+              title={
+                <Button
+                  primary
+                  onClick={(event: React.MouseEvent) => event.preventDefault()}
+                  label="Create Project"
+                />
+              }
+            >
+              <Box width="large">
+
+                <CreateProjectForm />
+              </Box>
+            </Tab>
+            {this.state.projects.map((project: Project, i: number) => {
+              return (
+                <Tab key={`project-${i}`} title={project.name}>
+                  <Box>This is a project!</Box>
+                </Tab>
+              )
+            })}
+          </ProjectListMenu>
+        </Box>
+      </Grommet>
+    )
+  }
+}
+
+const ProjectListMenu = styled(Tabs)`
+  flex-direction: row;
+
+  /* FIXME: this is ugly */
+  [class*='StyledTabs__StyledTabsHeader'] {
+    flex-direction: column;
+  }
+`
