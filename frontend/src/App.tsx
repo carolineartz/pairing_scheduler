@@ -25,8 +25,9 @@ const theme: ThemeType = deepFreeze({
 
 const App = () => (
   <Grommet theme={theme} full={true}>
-    <Box>App Placeholder</Box>
-    <CreateProjectForm />
+    <Box pad="medium">
+      <CreateProjectForm />
+    </Box>
   </Grommet>
 )
 
