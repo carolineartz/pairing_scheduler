@@ -40,7 +40,7 @@ class ProjectCreator
 
   def add_engineers!(project)
     engineers = @engineer_names.map do |name|
-      Engineer.find_or_create_by!(display_name: name)
+      Engineer.find_or_create_by!(name: name)
     end
 
     project.engineers = engineers

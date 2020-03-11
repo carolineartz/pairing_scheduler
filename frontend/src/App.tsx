@@ -51,10 +51,9 @@ export default class App extends React.Component<{}, PairingSchedulerAppState> {
               engineers,
             }: {
               projects: Array<{ name: string }>
-              engineers: Array<{ display_name: string }>
+              engineers: Array<{ name: string }>
             }) => {
-              const engs = engineers.map(datum => ({ name: datum.display_name }))
-              this.setState({ projects, engineers: engs })
+              this.setState({ projects, engineers })
             }
           )
       })

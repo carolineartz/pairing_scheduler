@@ -2,10 +2,10 @@
 #
 # Table name: engineers
 #
-#  id           :bigint           not null, primary key
-#  display_name :string           not null
-#  created_at   :datetime         not null
-#  updated_at   :datetime         not null
+#  id         :bigint           not null, primary key
+#  name       :string           not null
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
 #
 
 require 'rails_helper'
@@ -16,7 +16,7 @@ RSpec.describe Engineer, type: :model do
   end
 
   describe 'validations' do
-    it { should validate_presence_of(:display_name) }
+    it { should validate_presence_of(:name) }
   end
 
   describe "#pairing" do
