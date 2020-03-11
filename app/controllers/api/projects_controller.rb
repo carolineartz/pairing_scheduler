@@ -15,14 +15,16 @@ class Api::ProjectsController < ApplicationController
 
   # POST /projects
   def create
-    @project = ProjectCreator.create!(create_project_params)
+    @project = ProjectCreator.new(
+      start_date: create_project_params[:start_date],
+      sprint_count: create_project_params[:sprint_count],
+      engineer_names: create_project_params[:engineer_names]
+    ).create!
 
-    render json: serialize_with_associated(@project),
-      status: :created,
-      location: @project
+    render json: serialize_with_associated(@project), status: :created
   rescue => e # TODO: error handling
     Rails.logger.error("ERROR!!! #{e.to_s}")
-    render json: @project.errors, status: :unprocessable_entity
+    render json: { errors: e.to_s }, status: :unprocessable_entity
   end
 
   private
@@ -32,11 +34,7 @@ class Api::ProjectsController < ApplicationController
   end
 
   def create_project_params
-    params.permit(
-      :start_date,
-      :sprint_count,
-      engineer_names: []
-    )
+    @create_project_params ||= JSON.parse(request.body.read).with_indifferent_access
   end
 
   def serialize_with_all_engineers(projects)

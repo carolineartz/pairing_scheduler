@@ -1,16 +1,17 @@
 class ProjectCreator
   def initialize(
-    start_date:
+    start_date:,
     sprint_count:,
-    end_date: start_date,
-    name: "Sprint - #{start_date.to_s(:long)}",
+    end_date: "",
+    name: "",
     sprint_days: 5,
     engineer_names: []
   )
-    @start_date = start_date
-    @end_date = end_date
+    # binding.pry
+    @start_date = Date.parse(start_date)
+    @end_date = end_date.present? ? Date.parse(end_date) : @start_date
     @sprint_count = sprint_count
-    @name = name
+    @name = name.presence || "Project - #{@start_date.to_s(:long)}"
     @sprint_days = sprint_days
     @engineer_names = engineer_names
   end

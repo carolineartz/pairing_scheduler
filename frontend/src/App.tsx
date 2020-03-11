@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/camelcase */
 import * as React from 'react'
 
 import { Grommet, Box, Button, Tabs, Tab } from 'grommet'
@@ -53,7 +54,6 @@ export default class App extends React.Component<{}, PairingSchedulerAppState> {
               engineers: Array<{ display_name: string }>
             }) => {
               const engs = engineers.map(datum => ({ name: datum.display_name }))
-              // debugger
               this.setState({ projects, engineers: engs })
             }
           )
@@ -61,6 +61,26 @@ export default class App extends React.Component<{}, PairingSchedulerAppState> {
       .catch(err => {
         console.log(err)
       })
+  }
+
+  handleSubmitCreateProject = ({
+    start_date,
+    engineer_names,
+    sprint_count,
+  }: {
+    start_date: string
+    engineer_names: string[]
+    sprint_count: string
+  }) => {
+    fetch('api/projects', {
+      method: 'POST',
+      body: JSON.stringify({
+        start_date,
+        engineer_names,
+        // logic that its a string to begin with prob goes in the child component.
+        sprint_count: parseInt(sprint_count),
+      }),
+    })
   }
 
   render() {
@@ -84,7 +104,10 @@ export default class App extends React.Component<{}, PairingSchedulerAppState> {
               }
             >
               <Box pad="small" width="large" margin="auto">
-                <CreateProjectForm engineers={this.state.engineers} />
+                <CreateProjectForm
+                  engineers={this.state.engineers}
+                  onSubmit={this.handleSubmitCreateProject}
+                />
               </Box>
             </Tab>
             {this.state.projects.map((project: Project, i: number) => {

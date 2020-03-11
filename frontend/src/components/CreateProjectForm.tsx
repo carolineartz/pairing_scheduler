@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/camelcase */
 import * as React from 'react'
 
 import { Box, Button, Form, FormField } from 'grommet'
@@ -15,9 +16,18 @@ import { Calendar } from 'react-date-range'
 
 type CreateProjectFormProps = {
   engineers: Engineer[]
+  onSubmit: ({
+    engineer_names,
+    start_date,
+    sprint_count,
+  }: {
+    engineer_names: string[]
+    start_date: string
+    sprint_count: string
+  }) => void
 }
 
-export const CreateProjectForm = ({ engineers }: CreateProjectFormProps) => {
+export const CreateProjectForm = ({ engineers, onSubmit }: CreateProjectFormProps) => {
   const startOfValidDates = startOfWeek(startOfToday())
   const endOfValidDates = addToDate(startOfValidDates, { months: 6 })
   const invalidDates = eachDayOfInterval({
@@ -30,10 +40,8 @@ export const CreateProjectForm = ({ engineers }: CreateProjectFormProps) => {
   return (
     <Form
       onReset={(event: React.SyntheticEvent) => console.log(event)}
-      onSubmit={({ value, touched }: any) =>
-        // eslint-disable-next-line @typescript-eslint/camelcase
-        console.log('Submit', { start_date: formatISO(date), ...value }, touched)
-      }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      onSubmit={({ value, touched }: any) => onSubmit({ ...value, start_date: formatISO(date) })}
     >
       <FormField
         label="Sprint Count"
