@@ -34,7 +34,7 @@ declare type ProjectResponseData = {
   sprints: SprintResponseData[]
 }
 
-type Sprint = {
+declare type Sprint = {
   id: number
   projectId: number
   startDate: Date
@@ -43,7 +43,7 @@ type Sprint = {
   pairs: Array<[Engineer, Engineer]>
 }
 
-type Project = {
+declare type Project = {
   id: number
   name: string
   startDate: Date
@@ -51,6 +51,25 @@ type Project = {
   sprints: Sprint[]
 }
 
-type Engineer = {
+declare type Engineer = {
   name: string
+}
+
+
+declare type ProjectsResult = {
+  remote: Extract<RemoteDataStatus, 'success'>
+  data: {
+    projects: Array<{ name: string; id: number }>
+    engineers: Engineer[]
+  }
+}
+
+declare type ProjectResult = {
+  remote: Extract<RemoteDataStatus, 'success'>
+  data: Project
+}
+
+declare type ErrorResult = {
+  remote: Extract<RemoteDataStatus, 'failure'>
+  error: ServerError
 }

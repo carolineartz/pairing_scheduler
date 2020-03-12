@@ -1,9 +1,9 @@
 import * as React from 'react'
+import { random } from 'lodash'
+import { isWithinInterval, isWeekend, eachDayOfInterval, format as formatDate } from 'date-fns/esm'
 
 import { Calendar } from 'react-date-range'
 import { Box, Text, Image, ResponsiveContext } from 'grommet'
-import { random } from 'lodash'
-import { isWithinInterval, isWeekend, eachDayOfInterval, format as formatDate } from 'date-fns/esm'
 
 type ProjectInfoProps = {
   project: Project

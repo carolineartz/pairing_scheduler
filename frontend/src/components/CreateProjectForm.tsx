@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import * as React from 'react'
-import { Box, Button, Form, FormField, ResponsiveContext } from 'grommet'
-import { EngineerSelect } from './EngineerSelect'
-
+import { Calendar } from 'react-date-range'
 import {
   eachDayOfInterval,
   formatISO,
@@ -11,7 +9,9 @@ import {
   add as addToDate,
   isMonday,
 } from 'date-fns'
-import { Calendar } from 'react-date-range'
+
+import { Box, Button, Form, FormField, ResponsiveContext } from 'grommet'
+import { EngineerSelect } from './EngineerSelect'
 
 type CreateProjectFormProps = {
   engineers: Engineer[]
