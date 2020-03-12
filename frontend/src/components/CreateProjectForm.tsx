@@ -36,12 +36,28 @@ export const CreateProjectForm = ({ engineers, onSubmit }: CreateProjectFormProp
   }).filter((date: Date) => !isMonday(date))
 
   const [date, setDate] = React.useState(null as any)
+  const submitData = ({
+    engineer_names,
+    sprint_count,
+  }: {
+    engineer_names: string[]
+    sprint_count: string
+  }) => {
+    const engineerNamesRegex = /Create '(\w+)'|(\w+)/
+    // FIXME: Figure out why the `Create...` string is passing through as the option value.
+    // This file shouldn't have to handle cleaning that up.
+    const names = engineer_names.map(name => name.replace(engineerNamesRegex, '$1$2'))
+    return {
+      sprint_count,
+      engineer_names: names,
+      start_date: formatISO(date),
+    }
+  }
 
   return (
     <Form
       onReset={(event: React.SyntheticEvent) => console.log(event)}
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      onSubmit={({ value }: any) => onSubmit({ ...value, start_date: formatISO(date) })}
+      onSubmit={({ value }: any) => onSubmit(submitData(value))}
     >
       <FormField
         label="Sprint Count"

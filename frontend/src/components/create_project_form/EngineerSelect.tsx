@@ -43,7 +43,7 @@ export const EngineerSelect = ({ initialOptions, ...restProps }: EngineerSelectP
 
   const onRemoveName = (name: string) => {
     const nameIndex = options.indexOf(name)
-    setSelected(selected.filter(selectedSeason => selectedSeason !== nameIndex))
+    setSelected(selected.filter(selectedNameIndex => selectedNameIndex !== nameIndex))
   }
 
   const renderEngineerName = (name: string) => (
