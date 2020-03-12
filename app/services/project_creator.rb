@@ -7,7 +7,6 @@ class ProjectCreator
     sprint_days: 5,
     engineer_names: []
   )
-    # binding.pry
     @start_date = Date.parse(start_date)
     @end_date = end_date.present? ? Date.parse(end_date) : @start_date
     @sprint_count = sprint_count
@@ -49,8 +48,7 @@ class ProjectCreator
   def schedule_sprints!(project)
     sprint_scheduler = ProjectSprintScheduler.new(project: project)
 
-    # TODO: make add_sprints -> add_sprints!
-    sprint_scheduler.add_sprints(
+    sprint_scheduler.add_sprints!(
       sprint_count: @sprint_count,
       sprint_days: @sprint_days
     )

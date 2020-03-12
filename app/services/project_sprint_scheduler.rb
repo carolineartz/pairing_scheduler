@@ -6,7 +6,7 @@ class ProjectSprintScheduler
   end
 
   # TODO: should be a bang name
-  def add_sprints(sprint_count:, sprint_days: 5)
+  def add_sprints!(sprint_count:, sprint_days: 5)
     return unless sprint_count > 0
 
     sprints = project.sprints.order(:start_date)
