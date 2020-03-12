@@ -5,6 +5,7 @@
   "author": "Caroline Artz <ceartz@gmail.com>",
   "license": "MIT",
   "scripts": {
+    "install": "cd frontend && yarn",
     "dev": "cd frontend && yarn start"
     }
 }
