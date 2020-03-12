@@ -1,58 +1,13 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import * as React from 'react'
+import styled from 'styled-components'
+import { isWithinInterval } from 'date-fns/esm'
+import { Grommet, Box, Button, Tabs, Tab, Text, Image, Main } from 'grommet'
 
-import { Grommet, Box, Button, Tabs, Tab, Text, Heading, Image } from 'grommet'
-import { ThemeType } from 'grommet/themes/base'
-import { deepFreeze } from 'grommet/utils'
+import { theme } from "./theme"
 import { CreateProjectForm } from './components/CreateProjectForm'
 import { ProjectInfo } from './components/ProjectInfo'
-import { isWithinInterval } from 'date-fns/esm'
-
 import { fetchProjects, createProject, fetchProject } from './api'
-
-import 'react-date-range/dist/styles.css' // main style file
-import 'react-date-range/dist/theme/default.css' // theme css file
-import styled from 'styled-components'
-
-const theme: ThemeType = deepFreeze({
-  global: {
-    colors: {
-      brand: '#81357D',
-      'accent-1': '#bd53b8',
-      'accent-2': '#500d4d',
-      focus: '#bd53b8',
-    },
-    font: {
-      family: 'Montserrat',
-      size: '16px',
-    },
-  },
-  formField: {
-    label: {
-      weight: 'bold',
-    },
-  },
-  tab: {
-    pad: 'small',
-    margin: 'none',
-    border: {
-      active: {
-        color: 'brand',
-      },
-      hover: {
-        color: 'brand',
-      },
-    },
-    active: {
-      background: 'brand',
-      color: 'white',
-    },
-    hover: {
-      background: 'accent-1',
-      color: 'white',
-    }
-  },
-})
 
 type PairingSchedulerAppState = {
   remote: RemoteDataStatus
@@ -63,11 +18,6 @@ type PairingSchedulerAppState = {
   currentSprint?: Sprint
 }
 
-const getCurrentSprint = (project: Project): Sprint | undefined =>
-  project.sprints.find((sprint: Sprint) =>
-    isWithinInterval(Date.now(), { start: sprint.startDate, end: sprint.endDate })
-  )
-const getFirstSprint = (project: Project): Sprint => project.sprints[0]
 
 export default class App extends React.Component<{}, PairingSchedulerAppState> {
   state: PairingSchedulerAppState = {
@@ -129,9 +79,35 @@ export default class App extends React.Component<{}, PairingSchedulerAppState> {
     }
   }
 
-  render() {
-    console.log(this.state)
+  handleNavigateTab =  async (nextIndex: number) => {
+    if (nextIndex === 0) {
+        this.fetchProjectsData()
+        this.setState({ activeTabIndex: nextIndex })
+      } else {
+        try {
+          const projectData = await fetchProject(this.state.projects[nextIndex - 1].id)
 
+          switch (projectData.remote) {
+            case 'success':
+              this.setState({
+                remote: 'success',
+                project: projectData.data,
+                currentSprint:
+                  getCurrentSprint(projectData.data) || getFirstSprint(projectData.data),
+                activeTabIndex: nextIndex,
+              })
+              break
+            case 'failure':
+              this.setState({ remote: 'failure' })
+          }
+        } catch (e) {
+          this.setState({ remote: 'failure' })
+        }
+      }
+  }
+
+  render() {
+    // TODO: add a UI for when remoteData is `failure`
     return (
       <Grommet theme={theme} full={true}>
         <Box align="center" margin="30px auto 0" width={{ max: 'medium' }}>
@@ -140,31 +116,7 @@ export default class App extends React.Component<{}, PairingSchedulerAppState> {
         <Box pad="large" direction="row" fill>
           <ProjectListMenu
             activeIndex={this.state.activeTabIndex}
-            onActive={async (nextIndex: number) => {
-              if (nextIndex === 0) {
-                this.fetchProjectsData()
-                this.setState({ activeTabIndex: nextIndex })
-              } else {
-                try {
-                  const projectData = await fetchProject(this.state.projects[nextIndex - 1].id)
-                  switch (projectData.remote) {
-                    case 'success':
-                      this.setState({
-                        remote: 'success',
-                        project: projectData.data,
-                        currentSprint:
-                          getCurrentSprint(projectData.data) || getFirstSprint(projectData.data),
-                        activeTabIndex: nextIndex,
-                      })
-                      break
-                    case 'failure':
-                      this.setState({ remote: 'failure' })
-                  }
-                } catch (e) {
-                  this.setState({ remote: 'failure' })
-                }
-              }
-            }}
+            onActive={this.handleNavigateTab}
           >
             <Tab
               plain
@@ -180,42 +132,24 @@ export default class App extends React.Component<{}, PairingSchedulerAppState> {
                 </Box>
               }
             >
-              <Box
-                pad={{ horizontal: 'small', bottom: 'medium' }}
-                width={{ max: '70%' }}
-                margin="0 auto"
-              >
-                <Text margin={{ bottom: 'medium' }} size="xxlarge">
-                  Create New Project
-                </Text>
+              <MainContent heading="Create New Project">
                 <CreateProjectForm
                   engineers={this.state.engineers}
                   onSubmit={this.handleSubmitCreateProject}
                 />
-              </Box>
+              </MainContent>
             </Tab>
             {this.state.projects.map((project: { id: number; name: string }) => {
               return (
                 <Tab
-                  key={
-                    this.state.currentSprint
-                      ? `project-${project.id}-sprint-${this.state.currentSprint.id}`
-                      : `project-${project.id}`
-                  }
+                  key={`project-${project.id}`}
                   title={project.name}
                 >
-                  {this.state.currentSprint &&
-                    this.state.currentSprint.projectId === project.id && (
-                      <ProjectInfo
-                        activeSprint={
-                          this.state.project
-                            ? getCurrentSprint(this.state.project) ||
-                              getFirstSprint(this.state.project)
-                            : undefined
-                        }
-                        project={this.state.project}
-                      />
-                    )}
+                  <MainContent heading={project.name}>
+                    {this.state.currentSprint &&
+                      this.state.currentSprint.projectId === project.id &&
+                      this.state.project && <ProjectInfo project={this.state.project} />}
+                  </MainContent>
                 </Tab>
               )
             })}
@@ -226,6 +160,19 @@ export default class App extends React.Component<{}, PairingSchedulerAppState> {
   }
 }
 
+const MainContent = ({ heading, children }: { heading: string; children: React.ReactNode }) => (
+  <Main>
+    <Box pad={{ bottom: 'xsmall' }} border="bottom" margin={{ bottom: 'large', left: 'large' }}>
+      <Text size="xxlarge">{heading}</Text>
+    </Box>
+    <Box pad={{ horizontal: 'small', bottom: 'medium' }} margin={{ left: 'large' }}>
+      {children}
+    </Box>
+  </Main>
+)
+
+// Instead of doing routing for this small challenge, I used tabs. The Grommet tabs don't support vertical out of the box
+// so some adjustments are made. Given more time I would like to improve this approach.
 const ProjectListMenu = styled(Tabs)`
   flex-direction: row;
   width: 100%;
@@ -247,3 +194,9 @@ const ProjectListMenu = styled(Tabs)`
     flex-grow: 1;
   }
 `
+
+const getCurrentSprint = (project: Project): Sprint | undefined =>
+  project.sprints.find((sprint: Sprint) =>
+    isWithinInterval(Date.now(), { start: sprint.startDate, end: sprint.endDate })
+  )
+const getFirstSprint = (project: Project): Sprint => project.sprints[0]

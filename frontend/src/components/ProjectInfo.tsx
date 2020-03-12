@@ -1,12 +1,12 @@
 import * as React from 'react'
 
 import { Calendar } from 'react-date-range'
-import { Box } from 'grommet'
-import { isWithinInterval, isWeekend, eachDayOfInterval } from 'date-fns/esm'
+import { Box, Text, Image, ResponsiveContext } from 'grommet'
+import { random } from 'lodash'
+import { isWithinInterval, isWeekend, eachDayOfInterval, format as formatDate } from 'date-fns/esm'
 
 type ProjectInfoProps = {
-  project?: Project
-  activeSprint?: Sprint
+  project: Project
 }
 
 type SingleDateRangeObject = {
@@ -14,10 +14,16 @@ type SingleDateRangeObject = {
   endDate: Date
   key: string
 }
+// The Calendar types definitions are not up-to-date. Without this hack I can't use the props I need.
+// TODO: Submit a DefinitelyTyped
+const CustomCalendar = Calendar as any
 
-export const ProjectInfo = ({ project, activeSprint }: ProjectInfoProps) => {
+export const ProjectInfo = ({ project }: ProjectInfoProps) => {
+  const [selectedSprint, setSelectedSprint]: [
+    Sprint,
+    React.Dispatch<React.SetStateAction<Sprint>>
+  ] = React.useState(initialSelectedSprint(project))
 
-  const CustomCalendar = Calendar as any
   let invalidDates: Date[] = []
 
   if (project) {
@@ -27,77 +33,111 @@ export const ProjectInfo = ({ project, activeSprint }: ProjectInfoProps) => {
     }).filter((date: Date) => isWeekend(date))
   }
 
-  const calculateDateRange = (sprint: Sprint): SingleDateRangeObject => ({
-    startDate: sprint.startDate,
-    endDate: sprint.endDate,
-    key: 'selection',
-  })
-
-  const getDateRangesForProjectDate = (date: Date): SingleDateRangeObject | undefined => {
-    const sprint =
-      project &&
-      project.sprints.find((sprint: Sprint) =>
-        isWithinInterval(date, { start: sprint.startDate, end: sprint.endDate })
-      )
-    return sprint && calculateDateRange(sprint)
-  }
-
-  const getSprintForDate = (date: Date): Sprint | undefined =>
-    project &&
-    project.sprints.find((sprint: Sprint) =>
-      isWithinInterval(date, { start: sprint.startDate, end: sprint.endDate })
-    )
-
-  const [selectedSprint, setSelectedSprint]: [
-    Sprint | undefined,
-    React.Dispatch<React.SetStateAction<undefined | Sprint>>
-  ] = React.useState(activeSprint)
-
   const [dateRange, setDateRange]: [
-    SingleDateRangeObject | undefined,
-    React.Dispatch<React.SetStateAction<undefined | SingleDateRangeObject>>
-  ] = React.useState()
+    SingleDateRangeObject,
+    React.Dispatch<React.SetStateAction<SingleDateRangeObject>>
+  ] = React.useState(calculateDateRange(initialSelectedSprint(project)))
 
-  console.log("activeSprint", activeSprint)
-  console.log("selectedSprint", selectedSprint)
-
+  // Because I'm avoiding routing byusing tabs, some adjustments are needed to make sure the content
+  // on the tab updates when the project prop changes.
   React.useEffect(() => {
-    const sprintForDisplay = selectedSprint || activeSprint
+    let displaySprint: Sprint
 
-    if (sprintForDisplay) {
-      setDateRange(calculateDateRange(sprintForDisplay))
+    if (selectedSprint.projectId !== project.id) {
+      displaySprint = initialSelectedSprint(project)
     } else {
-      // FIXME: Shouldn't have to do this; consider a better way to conceptualize active/current sprint and date range display
-      setDateRange(dateRange)
+      displaySprint = selectedSprint
     }
+    setSelectedSprint(displaySprint)
 
-    // need to trigger change for external component (tab switching) changes only
-    // if the active sprint changes but can't compare on object
-  }, [JSON.stringify(activeSprint), JSON.stringify(selectedSprint)])
+    setDateRange(calculateDateRange(displaySprint))
+  }, [project])
+
+const size = React.useContext(ResponsiveContext)
+const shouldWrap = ["small", "medium"].includes(size)
 
   return (
-    <Box >
-      <Box align="start">
-        {!activeSprint && <Box>dummy</Box>}
-        {activeSprint && dateRange && project && (
+    <Box>
+      <Box margin={{bottom: "large"}} pad={{ bottom: 'xsmall' }} border="bottom">
+        <Text weight="bold" size="large">{`Sprint ${formatDate(
+          selectedSprint.startDate,
+          'M/d/yyyy'
+        )} - ${formatDate(selectedSprint.endDate, 'M/d/yyyy')}`}</Text>
+      </Box>
+    <Box direction="row" wrap={shouldWrap}>
+      <Box width= {{min: "400px"}}>
+        {dateRange && (
           <CustomCalendar
             disabledDates={invalidDates}
             date={dateRange}
             showDateDisplay={false}
             moveRangeOnFirstSelection={true}
-            ranges={dateRange ? [dateRange] : []}
+            ranges={[dateRange]}
             minDate={project.startDate}
             maxDate={project.endDate}
             displayMode="dateRange"
             onChange={(item: any) => {
-              const sprint = getSprintForDate(item)
+              const sprint = getSprintForDate(project, item)
               if (sprint) {
+                const dateRange = calculateDateRange(sprint)
+                setDateRange(dateRange)
                 setSelectedSprint(sprint)
               }
             }}
           />
         )}
       </Box>
+      <Box pad={{top: shouldWrap ? "medium" : "none"}} align="start">
+        <Box direction="row" wrap>
+          { selectedSprint.pairs.map(([eng1, eng2]: [Engineer, Engineer]) => (
+            <EngDisplay key={`${eng1.name}-${eng2.name}`} imgSrc={getRandomPearPath()}>
+              <Text>{eng1.name}</Text>
+              <Text>{eng2.name}</Text>
+            </EngDisplay>
+          )) }
+          { selectedSprint.soloEngineer &&
+            <EngDisplay imgSrc="/apple.svg">
+              <Text>{selectedSprint.soloEngineer.name}</Text>
+            </EngDisplay>
+          }
+        </Box>
+      </Box>
     </Box>
+  </Box>
   )
 }
+
+const EngDisplay = ({imgSrc, children}: {imgSrc: string; children: React.ReactNode}) => (
+  <Box direction="row" pad="small" height={{ max: "medium" }}>
+    <Box justify="center">
+      <Image width="50px" src={imgSrc} fit="contain" />
+    </Box>
+    <Box pad={{ horizontal: "small"}} gap="xsmall" justify="center">
+      {children}
+    </Box>
+  </Box>
+)
+
+
+// TODO: move these to some type of helper.
+
+const getRandomPearPath = (): string => `/pear-${random(1, 6)}.svg`
+
+const getCurrentSprint = (project: Project): Sprint | undefined =>
+  project.sprints.find((sprint: Sprint) =>
+    isWithinInterval(Date.now(), { start: sprint.startDate, end: sprint.endDate })
+  )
+const getFirstSprint = (project: Project): Sprint => project.sprints[0]
+
+const initialSelectedSprint = (project: Project) =>
+  getCurrentSprint(project) || getFirstSprint(project)
+
+const getSprintForDate = (project: Project, date: Date): Sprint | undefined =>
+  project.sprints.find((sprint: Sprint) =>
+    isWithinInterval(date, { start: sprint.startDate, end: sprint.endDate })
+  )
+const calculateDateRange = (sprint: Sprint): SingleDateRangeObject => ({
+  startDate: sprint.startDate,
+  endDate: sprint.endDate,
+  key: 'selection',
+})

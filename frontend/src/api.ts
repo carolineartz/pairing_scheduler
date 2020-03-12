@@ -114,7 +114,7 @@ const projectFromResponse = (projectData: ProjectResponseData): Project => ({
     projectId: sprintData.project_id,
     startDate: parseDate(sprintData.start_date, 'yyyy-MM-dd', new Date()),
     endDate: parseDate(sprintData.end_date, 'yyyy-MM-dd', new Date()),
-    soloEngineer: sprintData.solo_engineers[0] && sprintData.solo_engineers[0].name,
+    soloEngineer: sprintData.solo_engineers[0] && sprintData.solo_engineers[0],
     pairs: sprintData.pairings.map(
       ({ members: [eng1, eng2] }: { members: [EngineerResponseData, EngineerResponseData] }) => [
         { name: eng1.name },

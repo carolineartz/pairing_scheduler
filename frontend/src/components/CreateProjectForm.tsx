@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import * as React from 'react'
-
-import { Box, Button, Form, FormField } from 'grommet'
+import { Box, Button, Form, FormField, ResponsiveContext } from 'grommet'
 import { EngineerSelect } from './create_project_form/EngineerSelect'
 
 import {
@@ -35,7 +34,6 @@ export const CreateProjectForm = ({ engineers, onSubmit }: CreateProjectFormProp
     start: startOfValidDates,
     end: endOfValidDates,
   }).filter((date: Date) => !isMonday(date))
-
   const [date, setDate] = React.useState(null as any)
   const submitData = ({
     engineer_names,
@@ -55,45 +53,54 @@ export const CreateProjectForm = ({ engineers, onSubmit }: CreateProjectFormProp
     }
   }
 
-  const ref: React.RefObject<HTMLFormElement> = React.createRef()
+  // React hook allows tracking width of screen; provided by Grommet.
+  const size = React.useContext(ResponsiveContext)
+
+  // The Calendar types definitions are not up-to-date. Without this hack I can't use the props I need.
+  // TODO: Submit a DefinitelyTyped
   const CustomCalendar = Calendar as any
 
   return (
     <Form
       onReset={(event: React.SyntheticEvent) => console.log(event)}
-      onSubmit={({ value }: any) => {
-        console.log(value)
-        onSubmit(submitData(value))
-      }}
+      onSubmit={({ value }: any) => onSubmit(submitData(value))}
     >
-      <FormField
-        label="Sprint Count"
-        name="sprint_count"
-        required
-        validate={{ regexp: /^[0-9]+$/, message: 'number' }}
-        placeholder={<span>Enter the number of sprints to schedule...</span>}
-        type="number"
-      />
-      <FormField required name="engineer_names" label="Engineering Team">
-        {engineers.length > 0 && (
-          <EngineerSelect
-            initialOptions={engineers.map((eng: Engineer) => eng.name)}
-            name="engineer_names"
+      <Box direction="row" wrap>
+        <Box
+          basis={['medium', 'small', 'xsmall'].includes(size) ? '100%' : '50%'}
+          pad={{ right: 'large' }}
+        >
+          <FormField
+            label="Sprint Count"
+            name="sprint_count"
+            required
+            validate={{ regexp: /^[0-9]+$/, message: 'number' }}
+            placeholder={<span>Enter the number of sprints to schedule...</span>}
+            type="number"
           />
-        )}
-      </FormField>
-
-      <FormField required={!date} label="Start Date">
-        <Box align="start">
-          <CustomCalendar
-            minDate={startOfValidDates}
-            disabledDates={invalidDates}
-            date={date}
-            onChange={(evt: any) => setDate(evt)}
-          />
+          <FormField required name="engineer_names" label="Engineering Team">
+            {engineers.length > 0 && (
+              <EngineerSelect
+                initialOptions={engineers.map((eng: Engineer) => eng.name)}
+                name="engineer_names"
+              />
+            )}
+          </FormField>
         </Box>
-      </FormField>
-      <Box direction="row" justify="between" margin={{ top: 'medium' }}>
+        <Box>
+          <FormField required={!date} label="Start Date">
+            <Box align="start">
+              <CustomCalendar
+                minDate={startOfValidDates}
+                disabledDates={invalidDates}
+                date={date}
+                onChange={(evt: any) => setDate(evt)}
+              />
+            </Box>
+          </FormField>
+        </Box>
+      </Box>
+      <Box align="start" margin={{ top: 'medium' }}>
         <Button type="submit" label="Create" primary />
       </Box>
     </Form>

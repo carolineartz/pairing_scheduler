@@ -1,7 +1,6 @@
 import * as React from 'react'
 
 import { Box, Button, SelectProps, Text, Select } from 'grommet'
-
 import { FormClose } from 'grommet-icons'
 
 // the prefix name of the Create option entry

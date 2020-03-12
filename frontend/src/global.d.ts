@@ -39,7 +39,7 @@ type Sprint = {
   projectId: number
   startDate: Date
   endDate: Date
-  soloEngineer?: string
+  soloEngineer?: Engineer
   pairs: Array<[Engineer, Engineer]>
 }
 
