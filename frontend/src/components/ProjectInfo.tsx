@@ -51,7 +51,7 @@ export const ProjectInfo = ({ project }: ProjectInfoProps) => {
     setSelectedSprint(displaySprint)
 
     setDateRange(calculateDateRange(displaySprint))
-  }, [project])
+  }, [project, selectedSprint])
 
 const size = React.useContext(ResponsiveContext)
 const shouldWrap = ["small", "medium"].includes(size)

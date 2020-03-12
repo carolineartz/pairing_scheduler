@@ -2,7 +2,7 @@
 import * as React from 'react'
 import styled from 'styled-components'
 import { isWithinInterval } from 'date-fns/esm'
-import { Grommet, Box, Button, Tabs, Tab, Text, Image, Main, Accordion, ResponsiveContext, TabsProps } from 'grommet'
+import { Grommet, Box, Button, Tabs, Tab, Text, Image, Main, ResponsiveContext, TabsProps } from 'grommet'
 
 import { theme } from "./theme"
 import { CreateProjectForm } from './components/CreateProjectForm'
