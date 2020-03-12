@@ -18,7 +18,6 @@ type PairingSchedulerAppState = {
   currentSprint?: Sprint
 }
 
-
 export default class App extends React.Component<{}, PairingSchedulerAppState> {
   state: PairingSchedulerAppState = {
     remote: 'loading',
