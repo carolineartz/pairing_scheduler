@@ -30,6 +30,7 @@ type CreateProjectFormProps = {
 export const CreateProjectForm = ({ engineers, onSubmit }: CreateProjectFormProps) => {
   const startOfValidDates = startOfWeek(startOfToday())
   const endOfValidDates = addToDate(startOfValidDates, { months: 6 })
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const invalidDates = eachDayOfInterval({
     start: startOfValidDates,
     end: endOfValidDates,
@@ -48,7 +49,7 @@ export const CreateProjectForm = ({ engineers, onSubmit }: CreateProjectFormProp
     // This file shouldn't have to handle cleaning that up.
     const names = engineer_names.map(name => name.replace(engineerNamesRegex, '$1$2'))
     return {
-      sprint_count,
+      sprint_count: sprint_count,
       engineer_names: names,
       start_date: formatISO(date),
     }

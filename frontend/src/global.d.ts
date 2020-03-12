@@ -20,7 +20,9 @@ declare type SprintResponseData = {
   start_date: string
   end_date: string
   solo_engineers: EngineerResponseData[]
-  pairings: EngineerResponseData[]
+  pairings: {
+    members: [EngineerResponseData, EngineerResponseData]
+  }[]
 }
 
 declare type ProjectResponseData = {
@@ -39,6 +41,7 @@ type Sprint = {
 }
 
 type Project = {
+  id: number
   name: string
   startDate: Date
   endDate: Date
