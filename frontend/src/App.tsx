@@ -66,7 +66,7 @@ export default class App extends React.Component<{}, PairingSchedulerAppState> {
             remote: 'success',
             projects: [...this.state.projects, { name: result.data.name, id: result.data.id }],
             project: result.data,
-            activeTabIndex: this.state.projects.length,
+            activeTabIndex: this.state.projects.length + 1,
             currentSprint: getCurrentSprint(result.data) || getFirstSprint(result.data),
           })
           break
@@ -106,7 +106,7 @@ export default class App extends React.Component<{}, PairingSchedulerAppState> {
   }
 
   render() {
-    // TODO: add a UI for when remoteData is `failure`
+    // TODO: add a UI for when remoteData is `failure` and when `loading`
     return (
       <Grommet theme={theme} full={true}>
         <Box align="center" margin="30px auto 0" width={{ max: 'medium' }}>
