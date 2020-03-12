@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import * as React from 'react'
 import { Box, Button, Form, FormField, ResponsiveContext } from 'grommet'
-import { EngineerSelect } from './create_project_form/EngineerSelect'
+import { EngineerSelect } from './EngineerSelect'
 
 import {
   eachDayOfInterval,
