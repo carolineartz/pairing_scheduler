@@ -14,10 +14,10 @@ export const theme: ThemeType = deepFreeze({
     },
     breakpoints: {
       small: {
-        value: 700
+        value: 700,
       },
       medium: {
-        value: 1200
+        value: 1200,
       },
     },
     font: {

@@ -55,7 +55,6 @@ declare type Engineer = {
   name: string
 }
 
-
 declare type ProjectsResult = {
   remote: Extract<RemoteDataStatus, 'success'>
   data: {

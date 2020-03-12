@@ -2,9 +2,20 @@
 import * as React from 'react'
 import styled from 'styled-components'
 import { isWithinInterval } from 'date-fns/esm'
-import { Grommet, Box, Button, Tabs, Tab, Text, Image, Main, ResponsiveContext, TabsProps } from 'grommet'
+import {
+  Grommet,
+  Box,
+  Button,
+  Tabs,
+  Tab,
+  Text,
+  Image,
+  Main,
+  ResponsiveContext,
+  TabsProps,
+} from 'grommet'
 
-import { theme } from "./theme"
+import { theme } from './theme'
 import { CreateProjectForm } from './components/CreateProjectForm'
 import { ProjectInfo } from './components/ProjectInfo'
 import { fetchProjects, createProject, fetchProject } from './api'
@@ -78,43 +89,47 @@ export default class App extends React.Component<{}, PairingSchedulerAppState> {
     }
   }
 
-  handleNavigateTab =  async (nextIndex: number) => {
+  handleNavigateTab = async (nextIndex: number) => {
     if (nextIndex === 0) {
-        this.fetchProjectsData()
-        this.setState({ activeTabIndex: nextIndex })
-      } else {
-        try {
-          const projectData = await fetchProject(this.state.projects[nextIndex - 1].id)
+      this.fetchProjectsData()
+      this.setState({ activeTabIndex: nextIndex })
+    } else {
+      try {
+        const projectData = await fetchProject(this.state.projects[nextIndex - 1].id)
 
-          switch (projectData.remote) {
-            case 'success':
-              this.setState({
-                remote: 'success',
-                project: projectData.data,
-                currentSprint:
-                  getCurrentSprint(projectData.data) || getFirstSprint(projectData.data),
-                activeTabIndex: nextIndex,
-              })
-              break
-            case 'failure':
-              this.setState({ remote: 'failure' })
-          }
-        } catch (e) {
-          this.setState({ remote: 'failure' })
+        switch (projectData.remote) {
+          case 'success':
+            this.setState({
+              remote: 'success',
+              project: projectData.data,
+              currentSprint: getCurrentSprint(projectData.data) || getFirstSprint(projectData.data),
+              activeTabIndex: nextIndex,
+            })
+            break
+          case 'failure':
+            this.setState({ remote: 'failure' })
         }
+      } catch (e) {
+        this.setState({ remote: 'failure' })
       }
+    }
   }
 
   render() {
     // TODO: add a UI for when remoteData is `failure` and when `loading`
     return (
       <Grommet theme={theme} full={true}>
-        <Box align="center" margin="0 auto" pad={{bottom: "medium", top: "large"}} width={{ max: 'medium' }}>
+        <Box
+          align="center"
+          margin="0 auto"
+          pad={{ bottom: 'medium', top: 'large' }}
+          width={{ max: 'medium' }}
+        >
           <Image src="sprint-pairing.svg" fit="contain" />
         </Box>
         <ResponsiveContext.Consumer>
-          { size =>
-            <Box pad={{horizontal: "large", vertical: "small"}}>
+          {size => (
+            <Box pad={{ horizontal: 'large', vertical: 'small' }}>
               <ProjectListMenu
                 size={size}
                 activeIndex={this.state.activeTabIndex}
@@ -143,13 +158,10 @@ export default class App extends React.Component<{}, PairingSchedulerAppState> {
                 </Tab>
                 {this.state.projects.map((project: { id: number; name: string }) => {
                   return (
-                    <Tab
-                      key={`project-${project.id}`}
-                      title={project.name}
-                    >
-                      <Box margin={{top: "medium"}}>
+                    <Tab key={`project-${project.id}`} title={project.name}>
+                      <Box margin={{ top: 'medium' }}>
                         <MainContent heading={project.name}>
-                          { this.state.currentSprint &&
+                          {this.state.currentSprint &&
                             this.state.currentSprint.projectId === project.id &&
                             this.state.project && <ProjectInfo project={this.state.project} />}
                         </MainContent>
@@ -159,8 +171,7 @@ export default class App extends React.Component<{}, PairingSchedulerAppState> {
                 })}
               </ProjectListMenu>
             </Box>
-          }
-
+          )}
         </ResponsiveContext.Consumer>
       </Grommet>
     )
@@ -168,8 +179,13 @@ export default class App extends React.Component<{}, PairingSchedulerAppState> {
 }
 
 const MainContent = ({ heading, children }: { heading: string; children: React.ReactNode }) => (
-  <Main overflow="visible" pad={{vertical: "large"}}>
-    <Box pad={{ bottom: 'xsmall'}} height={{min: "50px"}} border="bottom" margin={{ bottom: 'large', left: 'large' }}>
+  <Main overflow="visible" pad={{ vertical: 'large' }}>
+    <Box
+      pad={{ bottom: 'xsmall' }}
+      height={{ min: '50px' }}
+      border="bottom"
+      margin={{ bottom: 'large', left: 'large' }}
+    >
       <Text size="xxlarge">{heading}</Text>
     </Box>
     <Box pad={{ horizontal: 'small', bottom: 'medium' }} margin={{ left: 'large' }}>
@@ -180,9 +196,9 @@ const MainContent = ({ heading, children }: { heading: string; children: React.R
 
 // Instead of doing routing for this small challenge, I used tabs. The Grommet tabs don't support vertical out of the box
 // so some adjustments are made. Given more time I would like to improve this approach.
-const ProjectListMenu = styled(Tabs)<TabsProps & {size: string}>`
+const ProjectListMenu = styled(Tabs)<TabsProps & { size: string }>`
   /* flex-direction: row; */
-  flex-direction: ${props => props.size === 'small' ? 'column' : 'row'};
+  flex-direction: ${props => (props.size === 'small' ? 'column' : 'row')};
   width: 100%;
 
   /* FIXME: this is ugly */

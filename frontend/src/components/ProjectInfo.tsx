@@ -53,71 +53,70 @@ export const ProjectInfo = ({ project }: ProjectInfoProps) => {
     setDateRange(calculateDateRange(displaySprint))
   }, [project, selectedSprint])
 
-const size = React.useContext(ResponsiveContext)
-const shouldWrap = ["small", "medium"].includes(size)
+  const size = React.useContext(ResponsiveContext)
+  const shouldWrap = ['small', 'medium'].includes(size)
 
   return (
     <Box>
-      <Box margin={{bottom: "large"}} pad={{ bottom: 'xsmall' }} border="bottom">
+      <Box margin={{ bottom: 'large' }} pad={{ bottom: 'xsmall' }} border="bottom">
         <Text weight="bold" size="large">{`Sprint ${formatDate(
           selectedSprint.startDate,
           'M/d/yyyy'
         )} - ${formatDate(selectedSprint.endDate, 'M/d/yyyy')}`}</Text>
       </Box>
-    <Box direction="row" wrap={shouldWrap}>
-      <Box width= {{min: "400px"}}>
-        {dateRange && (
-          <CustomCalendar
-            disabledDates={invalidDates}
-            date={dateRange}
-            showDateDisplay={false}
-            moveRangeOnFirstSelection={true}
-            ranges={[dateRange]}
-            minDate={project.startDate}
-            maxDate={project.endDate}
-            displayMode="dateRange"
-            onChange={(item: any) => {
-              const sprint = getSprintForDate(project, item)
-              if (sprint) {
-                const dateRange = calculateDateRange(sprint)
-                setDateRange(dateRange)
-                setSelectedSprint(sprint)
-              }
-            }}
-          />
-        )}
-      </Box>
-      <Box pad={{top: shouldWrap ? "medium" : "none"}} align="start">
-        <Box direction="row" wrap>
-          { selectedSprint.pairs.map(([eng1, eng2]: [Engineer, Engineer]) => (
-            <EngDisplay key={`${eng1.name}-${eng2.name}`} imgSrc={getRandomPearPath()}>
-              <Text>{eng1.name}</Text>
-              <Text>{eng2.name}</Text>
-            </EngDisplay>
-          )) }
-          { selectedSprint.soloEngineer &&
-            <EngDisplay imgSrc="/apple.svg">
-              <Text>{selectedSprint.soloEngineer.name}</Text>
-            </EngDisplay>
-          }
+      <Box direction="row" wrap={shouldWrap}>
+        <Box width={{ min: '400px' }}>
+          {dateRange && (
+            <CustomCalendar
+              disabledDates={invalidDates}
+              date={dateRange}
+              showDateDisplay={false}
+              moveRangeOnFirstSelection={true}
+              ranges={[dateRange]}
+              minDate={project.startDate}
+              maxDate={project.endDate}
+              displayMode="dateRange"
+              onChange={(item: any) => {
+                const sprint = getSprintForDate(project, item)
+                if (sprint) {
+                  const dateRange = calculateDateRange(sprint)
+                  setDateRange(dateRange)
+                  setSelectedSprint(sprint)
+                }
+              }}
+            />
+          )}
+        </Box>
+        <Box pad={{ top: shouldWrap ? 'medium' : 'none' }} align="start">
+          <Box direction="row" wrap>
+            {selectedSprint.pairs.map(([eng1, eng2]: [Engineer, Engineer]) => (
+              <EngDisplay key={`${eng1.name}-${eng2.name}`} imgSrc={getRandomPearPath()}>
+                <Text>{eng1.name}</Text>
+                <Text>{eng2.name}</Text>
+              </EngDisplay>
+            ))}
+            {selectedSprint.soloEngineer && (
+              <EngDisplay imgSrc="/apple.svg">
+                <Text>{selectedSprint.soloEngineer.name}</Text>
+              </EngDisplay>
+            )}
+          </Box>
         </Box>
       </Box>
     </Box>
-  </Box>
   )
 }
 
-const EngDisplay = ({imgSrc, children}: {imgSrc: string; children: React.ReactNode}) => (
-  <Box direction="row" pad="small" height={{ max: "medium" }}>
+const EngDisplay = ({ imgSrc, children }: { imgSrc: string; children: React.ReactNode }) => (
+  <Box direction="row" pad="small" height={{ max: 'medium' }}>
     <Box justify="center">
       <Image width="50px" src={imgSrc} fit="contain" />
     </Box>
-    <Box pad={{ horizontal: "small"}} gap="xsmall" justify="center">
+    <Box pad={{ horizontal: 'small' }} gap="xsmall" justify="center">
       {children}
     </Box>
   </Box>
 )
-
 
 // TODO: move these to some type of helper.
 
