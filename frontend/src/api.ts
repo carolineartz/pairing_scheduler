@@ -110,6 +110,8 @@ const projectFromResponse = (projectData: ProjectResponseData): Project => ({
   startDate: parseDate(projectData.start_date, 'yyyy-MM-dd', new Date()),
   endDate: parseDate(projectData.end_date, 'yyyy-MM-dd', new Date()),
   sprints: projectData.sprints.map((sprintData: SprintResponseData) => ({
+    id: sprintData.id,
+    projectId: sprintData.project_id,
     startDate: parseDate(sprintData.start_date, 'yyyy-MM-dd', new Date()),
     endDate: parseDate(sprintData.end_date, 'yyyy-MM-dd', new Date()),
     soloEngineer: sprintData.solo_engineers[0] && sprintData.solo_engineers[0].name,
@@ -121,30 +123,3 @@ const projectFromResponse = (projectData: ProjectResponseData): Project => ({
     ),
   })),
 })
-
-// export const createProject = async (): Promise<ProjectResult | ErrorResult> => {
-
-// }
-
-// export const projectFromResponse = (usersData: UserApiResponse[]): Array<UserAttrs> =>
-//   usersData.map(
-//     ({
-//       display_name: displayName,
-//       image_url: imageUrl,
-//       time_zone: timeZone,
-//       membership_status: membershipStatus,
-//       bot: isBot,
-//       ...restData
-//     }: UserApiResponse): UserAttrs => ({
-//       id: restData.id,
-//       timeZone,
-//       membershipStatus,
-//       isBot,
-//       title: restData.title,
-//       phone: restData.phone,
-//       skype: restData.skype,
-//       name: restData.name,
-//       displayName,
-//       imageUrl,
-//     })
-//   )

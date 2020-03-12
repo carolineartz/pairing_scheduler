@@ -49,7 +49,7 @@ class Api::ProjectsController < ApplicationController
       except: %i(created_at updated_at),
       include: {
         sprints: {
-          except: %i(created_at updated_at project_id),
+          except: %i(created_at updated_at),
           methods: :solo_engineers,
           include: {
             pairings: {

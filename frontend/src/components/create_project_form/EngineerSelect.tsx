@@ -41,11 +41,11 @@ export const EngineerSelect = ({ initialOptions, ...restProps }: EngineerSelectP
   const [selected, setSelected] = React.useState([] as number[])
   const [searchValue, setSearchValue] = React.useState('')
 
+  // need to get ref to change the actual value here so that validation works when names are removed.
   const onRemoveName = (name: string) => {
     const nameIndex = options.indexOf(name)
-    setSelected(selected.filter(selectedNameIndex => selectedNameIndex !== nameIndex))
+    setSelected(sel => sel.filter(selectedNameIndex => selectedNameIndex !== nameIndex))
   }
-
   const renderEngineerName = (name: string) => (
     <Button
       key={`engineer_name_${name}`}
@@ -113,7 +113,10 @@ export const EngineerSelect = ({ initialOptions, ...restProps }: EngineerSelectP
           setSelected(nextSelected)
         }
       }}
-      onClose={() => setOptions(allOptions)}
+      onClose={() => {
+        console.log(selected)
+        setOptions(allOptions)
+      }}
       onSearch={(text: string) => {
         if (searchValue || text) {
           updateCreateOption(text, allOptions)

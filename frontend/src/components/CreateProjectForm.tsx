@@ -55,10 +55,16 @@ export const CreateProjectForm = ({ engineers, onSubmit }: CreateProjectFormProp
     }
   }
 
+  const ref: React.RefObject<HTMLFormElement> = React.createRef()
+  const CustomCalendar = Calendar as any
+
   return (
     <Form
       onReset={(event: React.SyntheticEvent) => console.log(event)}
-      onSubmit={({ value }: any) => onSubmit(submitData(value))}
+      onSubmit={({ value }: any) => {
+        console.log(value)
+        onSubmit(submitData(value))
+      }}
     >
       <FormField
         label="Sprint Count"
@@ -68,7 +74,7 @@ export const CreateProjectForm = ({ engineers, onSubmit }: CreateProjectFormProp
         placeholder={<span>Enter the number of sprints to schedule...</span>}
         type="number"
       />
-      <FormField name="engineer_names" label="Engineering Team">
+      <FormField required name="engineer_names" label="Engineering Team">
         {engineers.length > 0 && (
           <EngineerSelect
             initialOptions={engineers.map((eng: Engineer) => eng.name)}
@@ -77,11 +83,11 @@ export const CreateProjectForm = ({ engineers, onSubmit }: CreateProjectFormProp
         )}
       </FormField>
 
-      <FormField label="Start Date">
+      <FormField required={!date} label="Start Date">
         <Box align="start">
-          <Calendar
-            // minDate={startOfValidDates}
-            // disabledDates={invalidDates}
+          <CustomCalendar
+            minDate={startOfValidDates}
+            disabledDates={invalidDates}
             date={date}
             onChange={(evt: any) => setDate(evt)}
           />
