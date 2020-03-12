@@ -2,7 +2,7 @@
 import * as React from 'react'
 import styled from 'styled-components'
 import { isWithinInterval } from 'date-fns/esm'
-import { Grommet, Box, Button, Tabs, Tab, Text, Image, Main } from 'grommet'
+import { Grommet, Box, Button, Tabs, Tab, Text, Image, Main, Accordion, ResponsiveContext, TabsProps } from 'grommet'
 
 import { theme } from "./theme"
 import { CreateProjectForm } from './components/CreateProjectForm'
@@ -109,59 +109,67 @@ export default class App extends React.Component<{}, PairingSchedulerAppState> {
     // TODO: add a UI for when remoteData is `failure` and when `loading`
     return (
       <Grommet theme={theme} full={true}>
-        <Box align="center" margin="30px auto 0" width={{ max: 'medium' }}>
+        <Box align="center" margin="0 auto" pad={{bottom: "medium", top: "large"}} width={{ max: 'medium' }}>
           <Image src="sprint-pairing.svg" fit="contain" />
         </Box>
-        <Box pad="large" direction="row" fill>
-          <ProjectListMenu
-            activeIndex={this.state.activeTabIndex}
-            onActive={this.handleNavigateTab}
-          >
-            <Tab
-              plain
-              title={
-                <Box pad={{ vertical: 'xsmall' }}>
-                  <Button
-                    as="div"
-                    disabled={this.state.activeTabIndex === 0}
-                    primary
-                    onClick={(event: React.MouseEvent) => event.preventDefault()}
-                    label="New Project"
-                  />
-                </Box>
-              }
-            >
-              <MainContent heading="Create New Project">
-                <CreateProjectForm
-                  engineers={this.state.engineers}
-                  onSubmit={this.handleSubmitCreateProject}
-                />
-              </MainContent>
-            </Tab>
-            {this.state.projects.map((project: { id: number; name: string }) => {
-              return (
+        <ResponsiveContext.Consumer>
+          { size =>
+            <Box pad={{horizontal: "large", vertical: "small"}}>
+              <ProjectListMenu
+                size={size}
+                activeIndex={this.state.activeTabIndex}
+                onActive={this.handleNavigateTab}
+              >
                 <Tab
-                  key={`project-${project.id}`}
-                  title={project.name}
+                  plain
+                  title={
+                    <Box pad={{ vertical: 'xsmall' }}>
+                      <Button
+                        as="div"
+                        disabled={this.state.activeTabIndex === 0}
+                        primary
+                        onClick={(event: React.MouseEvent) => event.preventDefault()}
+                        label="New Project"
+                      />
+                    </Box>
+                  }
                 >
-                  <MainContent heading={project.name}>
-                    {this.state.currentSprint &&
-                      this.state.currentSprint.projectId === project.id &&
-                      this.state.project && <ProjectInfo project={this.state.project} />}
+                  <MainContent heading="Create New Project">
+                    <CreateProjectForm
+                      engineers={this.state.engineers}
+                      onSubmit={this.handleSubmitCreateProject}
+                    />
                   </MainContent>
                 </Tab>
-              )
-            })}
-          </ProjectListMenu>
-        </Box>
+                {this.state.projects.map((project: { id: number; name: string }) => {
+                  return (
+                    <Tab
+                      key={`project-${project.id}`}
+                      title={project.name}
+                    >
+                      <Box margin={{top: "medium"}}>
+                        <MainContent heading={project.name}>
+                          { this.state.currentSprint &&
+                            this.state.currentSprint.projectId === project.id &&
+                            this.state.project && <ProjectInfo project={this.state.project} />}
+                        </MainContent>
+                      </Box>
+                    </Tab>
+                  )
+                })}
+              </ProjectListMenu>
+            </Box>
+          }
+
+        </ResponsiveContext.Consumer>
       </Grommet>
     )
   }
 }
 
 const MainContent = ({ heading, children }: { heading: string; children: React.ReactNode }) => (
-  <Main>
-    <Box pad={{ bottom: 'xsmall' }} border="bottom" margin={{ bottom: 'large', left: 'large' }}>
+  <Main overflow="visible" pad={{vertical: "large"}}>
+    <Box pad={{ bottom: 'xsmall'}} height={{min: "50px"}} border="bottom" margin={{ bottom: 'large', left: 'large' }}>
       <Text size="xxlarge">{heading}</Text>
     </Box>
     <Box pad={{ horizontal: 'small', bottom: 'medium' }} margin={{ left: 'large' }}>
@@ -172,8 +180,9 @@ const MainContent = ({ heading, children }: { heading: string; children: React.R
 
 // Instead of doing routing for this small challenge, I used tabs. The Grommet tabs don't support vertical out of the box
 // so some adjustments are made. Given more time I would like to improve this approach.
-const ProjectListMenu = styled(Tabs)`
-  flex-direction: row;
+const ProjectListMenu = styled(Tabs)<TabsProps & {size: string}>`
+  /* flex-direction: row; */
+  flex-direction: ${props => props.size === 'small' ? 'column' : 'row'};
   width: 100%;
 
   /* FIXME: this is ugly */

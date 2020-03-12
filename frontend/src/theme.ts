@@ -13,6 +13,9 @@ export const theme: ThemeType = deepFreeze({
       focus: '#bd53b8',
     },
     breakpoints: {
+      small: {
+        value: 700
+      },
       medium: {
         value: 1200
       },
