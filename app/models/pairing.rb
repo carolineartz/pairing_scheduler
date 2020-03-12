@@ -18,6 +18,9 @@
 #  fk_rails_...  (sprint_id => sprints.id)
 #
 
+# A Pairing represents a given date where a pair of engineers worked together
+#
+# While it is composed of a Pair, a Pairing belongs to an instance of a Sprint.
 class Pairing < ApplicationRecord
   attr_readonly :member1_id, :member2_id, :sprint_id
 
@@ -36,6 +39,8 @@ class Pairing < ApplicationRecord
 
   delegate :members, to: :pair
 
+  # The `build_for_pair` and `create_for_pair!` methods are the the preferred construction of Pairing as
+  # it hides the need to understand the aggregate Pair attributes.
   def self.build_for_pair(pair:, sprint:)
     eng_1, eng_2 = pair.members
 

@@ -44,7 +44,10 @@ class Sprint < ApplicationRecord
   end
 
   #
-  # The engineers working solo during this sprint, if exists.
+  # The engineers working solo during this sprint, if exists. Since a Sprint can exist without Pairings assigned
+  # and engineers belong to its Project, we can't make any assumptions about how many engineers should or should
+  # not be paired up. In practice, given the scheduler service, once Pairings are created, there will be one
+  # solo engineer for projects with an odd number engineer count.
   #
   # @return [Array<Engineer>, nil] should be present for project sprints with an odd number of (working) engineers
   #
