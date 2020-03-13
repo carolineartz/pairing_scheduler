@@ -1,24 +1,6 @@
 import { default as axios, AxiosError } from 'axios'
 import { parse as parseDate } from 'date-fns'
 
-export type ProjectsResult = {
-  remote: Extract<RemoteDataStatus, 'success'>
-  data: {
-    projects: Array<{ name: string; id: number }>
-    engineers: Engineer[]
-  }
-}
-
-export type ProjectResult = {
-  remote: Extract<RemoteDataStatus, 'success'>
-  data: Project
-}
-
-export type ErrorResult = {
-  remote: Extract<RemoteDataStatus, 'failure'>
-  error: ServerError
-}
-
 export const fetchProjects = async (): Promise<ProjectsResult | ErrorResult> => {
   try {
     const response = await axios.request<{
