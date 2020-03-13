@@ -1,10 +1,10 @@
 import * as React from 'react'
 
 import { Calendar as RDRCalendar } from 'react-date-range'
-import { Box, Text, Image, ResponsiveContext } from 'grommet'
-import { random } from 'lodash'
+import { Box, Text, ResponsiveContext } from 'grommet'
 
 import { CalendarHeadingDisplay } from './SprintHeadingDisplay'
+import { Engineers } from './Engineers'
 
 import {
   SingleDateRangeObject,
@@ -90,15 +90,15 @@ export const Calendar = ({ project }: ProjectInfoProps) => {
         <Box pad={{ top: shouldWrap ? 'medium' : 'none' }} align="start">
           <Box direction="row" wrap>
             {selectedSprint.pairs.map(([eng1, eng2]: [Engineer, Engineer]) => (
-              <EngDisplay key={`${eng1.name}-${eng2.name}`} imgSrc={getRandomPearPath()}>
+              <Engineers key={`${eng1.name}-${eng2.name}`} context={'pair'}>
                 <Text>{eng1.name}</Text>
                 <Text>{eng2.name}</Text>
-              </EngDisplay>
+              </Engineers>
             ))}
             {selectedSprint.soloEngineer && (
-              <EngDisplay imgSrc="/apple.svg">
+              <Engineers context={'solo'}>
                 <Text>{selectedSprint.soloEngineer.name}</Text>
-              </EngDisplay>
+              </Engineers>
             )}
           </Box>
         </Box>
@@ -106,16 +106,3 @@ export const Calendar = ({ project }: ProjectInfoProps) => {
     </Box>
   )
 }
-
-const EngDisplay = ({ imgSrc, children }: { imgSrc: string; children: React.ReactNode }) => (
-  <Box direction="row" pad="small" height={{ max: 'medium' }}>
-    <Box justify="center">
-      <Image width="50px" src={imgSrc} fit="contain" />
-    </Box>
-    <Box pad={{ horizontal: 'small' }} gap="xsmall" justify="center">
-      {children}
-    </Box>
-  </Box>
-)
-
-export const getRandomPearPath = (): string => `/pear-${random(1, 6)}.svg`
