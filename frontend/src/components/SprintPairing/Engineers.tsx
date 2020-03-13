@@ -7,17 +7,24 @@ type WorkContext = 'solo' | 'pair'
 
 export const getRandomPearPath = (): string => `/pear-${random(1, 6)}.svg`
 
+type EngineersProps = {
+  context: WorkContext
+  imageWidth?: React.ImgHTMLAttributes<HTMLImageElement>['width']
+  imageHeight?: React.ImgHTMLAttributes<HTMLImageElement>['height']
+  children: React.ReactNode
+}
+
 export const Engineers = ({
   context,
+  imageHeight = '50px',
+  imageWidth = '50px',
   children,
-}: {
-  context: WorkContext
-  children: React.ReactNode
-}) => (
+}: EngineersProps) => (
   <Box direction="row" pad="small" height={{ max: 'medium' }}>
     <Box justify="center">
       <Image
-        width="50px"
+        width={imageWidth}
+        height={imageHeight}
         src={context === 'solo' ? 'apple.svg' : getRandomPearPath()}
         fit="contain"
       />

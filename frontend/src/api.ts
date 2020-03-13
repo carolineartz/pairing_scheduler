@@ -1,5 +1,5 @@
 import { default as axios, AxiosError } from 'axios'
-import { parse as parseDate } from 'date-fns'
+import { parse as parseDate, subSeconds, addDays } from 'date-fns'
 
 export const fetchProjects = async (): Promise<ProjectsResult | ErrorResult> => {
   try {
@@ -86,6 +86,8 @@ export const fetchProject = async (id: number): Promise<ProjectResult | ErrorRes
   }
 }
 
+const endOfEndDate = (date: Date): Date => subSeconds(addDays(date, 1), 1)
+
 const projectFromResponse = (projectData: ProjectResponseData): Project => ({
   id: projectData.id,
   name: projectData.name,
@@ -95,7 +97,7 @@ const projectFromResponse = (projectData: ProjectResponseData): Project => ({
     id: sprintData.id,
     projectId: sprintData.project_id,
     startDate: parseDate(sprintData.start_date, 'yyyy-MM-dd', new Date()),
-    endDate: parseDate(sprintData.end_date, 'yyyy-MM-dd', new Date()),
+    endDate: endOfEndDate(parseDate(sprintData.end_date, 'yyyy-MM-dd', new Date())),
     soloEngineer: sprintData.solo_engineers[0] && sprintData.solo_engineers[0],
     pairs: sprintData.pairings.map(
       ({ members: [eng1, eng2] }: { members: [EngineerResponseData, EngineerResponseData] }) => [

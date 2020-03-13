@@ -19,6 +19,7 @@ import { theme } from './theme'
 import { CreateProjectForm } from './components/CreateProjectForm'
 import { Calendar as SprintPairingCalendar } from './components/SprintPairing/Calendar'
 import { fetchProjects, createProject, fetchProject } from './api'
+import { Timeline } from './components/SprintPairing/Timeline'
 
 type PairingSchedulerAppState = {
   remote: RemoteDataStatus
@@ -164,8 +165,9 @@ export default class App extends React.Component<{}, PairingSchedulerAppState> {
                           {this.state.currentSprint &&
                             this.state.currentSprint.projectId === project.id &&
                             this.state.project && (
-                              <SprintPairingCalendar project={this.state.project} />
+                              <Timeline project={this.state.project} />
                             )}
+
                         </MainContent>
                       </Box>
                     </Tab>
@@ -226,3 +228,7 @@ const getCurrentSprint = (project: Project): Sprint | undefined =>
     isWithinInterval(Date.now(), { start: sprint.startDate, end: sprint.endDate })
   )
 const getFirstSprint = (project: Project): Sprint => project.sprints[0]
+
+    // this.state.project && (
+                            //   <SprintPairingCalendar project={this.state.project} />
+                            // )}

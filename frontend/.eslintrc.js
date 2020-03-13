@@ -41,7 +41,7 @@ module.exports = {
     // Allow implicit void for now...
     "@typescript-eslint/explicit-function-return-type": "off",
     // Enable prettier rules
-    "prettier/prettier": "error",
+    "prettier/prettier": 1,
     // allow @ts-ignore for testing purposes
     "@typescript-eslint/ban-ts-ignore": "off",
     "@typescript-eslint/interface-name-prefix": "off",
