@@ -17,7 +17,7 @@ import {
 
 import { theme } from './theme'
 import { CreateProjectForm } from './components/CreateProjectForm'
-import { ProjectInfo } from './components/ProjectInfo'
+import { Calendar as SprintPairingCalendar } from './components/SprintPairing/Calendar'
 import { fetchProjects, createProject, fetchProject } from './api'
 
 type PairingSchedulerAppState = {
@@ -163,7 +163,9 @@ export default class App extends React.Component<{}, PairingSchedulerAppState> {
                         <MainContent heading={project.name}>
                           {this.state.currentSprint &&
                             this.state.currentSprint.projectId === project.id &&
-                            this.state.project && <ProjectInfo project={this.state.project} />}
+                            this.state.project && (
+                              <SprintPairingCalendar project={this.state.project} />
+                            )}
                         </MainContent>
                       </Box>
                     </Tab>

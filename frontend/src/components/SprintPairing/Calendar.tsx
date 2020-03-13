@@ -1,10 +1,10 @@
 import * as React from 'react'
 
-import { Calendar } from 'react-date-range'
+import { Calendar as RDRCalendar } from 'react-date-range'
 import { Box, Text, Image, ResponsiveContext } from 'grommet'
 import { random } from 'lodash'
 
-import { SprintHeadingDisplay } from './SprintHeadingDisplay'
+import { CalendarHeadingDisplay } from './SprintHeadingDisplay'
 
 import {
   SingleDateRangeObject,
@@ -13,15 +13,15 @@ import {
   getFirstSprint,
   calculateDateRange,
   getInvalidDates,
-} from '../projectDateCalculations'
+} from '../../projectDateCalculations'
 
 type ProjectInfoProps = {
   project: Project
 }
 
-const CustomCalendar = Calendar as any
+const CustomRDRCalendar = RDRCalendar as any
 
-export const ProjectInfo = ({ project }: ProjectInfoProps) => {
+export const Calendar = ({ project }: ProjectInfoProps) => {
   const initialSelectedSprint = (project: Project) =>
     getCurrentSprint(project) || getFirstSprint(project)
 
@@ -55,7 +55,7 @@ export const ProjectInfo = ({ project }: ProjectInfoProps) => {
   return (
     <Box>
       <Box pad={{ bottom: 'xsmall' }} align="center">
-        <SprintHeadingDisplay
+        <CalendarHeadingDisplay
           setSelectedSprint={setSelectedSprint}
           selectedSprint={selectedSprint}
           project={project}
@@ -64,7 +64,7 @@ export const ProjectInfo = ({ project }: ProjectInfoProps) => {
       <Box direction="row" wrap={shouldWrap}>
         <Box width={{ min: '400px' }}>
           {dateRange && (
-            <CustomCalendar
+            <CustomRDRCalendar
               disabledDates={getInvalidDates(project)}
               date={dateRange}
               showDateDisplay={false}

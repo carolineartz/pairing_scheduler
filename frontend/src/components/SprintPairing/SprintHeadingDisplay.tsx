@@ -7,7 +7,7 @@ import {
   SequentialDirection,
   getNextSequentialSprint,
   indexOfSprint,
-} from './../projectDateCalculations'
+} from '../../projectDateCalculations'
 import styled from 'styled-components'
 
 type SprintHeadingDisplayProps = {
@@ -16,7 +16,7 @@ type SprintHeadingDisplayProps = {
   project: Project
 }
 
-export const SprintHeadingDisplay = (props: SprintHeadingDisplayProps) => {
+export const CalendarHeadingDisplay = (props: SprintHeadingDisplayProps) => {
   const onClick = (direction: SequentialDirection) =>
     props.setSelectedSprint(getNextSequentialSprint(props.project, props.selectedSprint, direction))
 
