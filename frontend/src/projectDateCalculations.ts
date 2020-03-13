@@ -52,7 +52,7 @@ export const getNextSprintInSequence = (
   return getSprintForDate(project, dateFn(indexDate, 1)) || currentSprint
 }
 
-export const getNextScrollingSprint = (
+export const getNextSequentialSprint = (
   project: Project,
   currentSprint: Sprint,
   scrollingDirection: SequentialDirection
@@ -63,3 +63,6 @@ export const getNextScrollingSprint = (
     scrollingDirection === 'forwards' ? currentSprint.endDate : currentSprint.startDate
   return getSprintForDate(project, dateFn(indexDate, 1)) || currentSprint
 }
+
+export const indexOfSprint = (project: Project, sprint: Sprint): number =>
+  project.sprints.indexOf(sprint)

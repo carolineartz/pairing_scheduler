@@ -184,7 +184,7 @@ const MainContent = ({ heading, children }: { heading: string; children: React.R
       pad={{ bottom: 'xsmall' }}
       height={{ min: '50px' }}
       border="bottom"
-      margin={{ bottom: 'large', left: 'large' }}
+      margin={{ bottom: 'medium', left: 'large' }}
     >
       <Text size="xxlarge">{heading}</Text>
     </Box>

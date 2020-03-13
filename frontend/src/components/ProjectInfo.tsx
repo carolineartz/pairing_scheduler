@@ -54,7 +54,7 @@ export const ProjectInfo = ({ project }: ProjectInfoProps) => {
 
   return (
     <Box>
-      <Box margin={{ bottom: 'large' }} pad={{ bottom: 'xsmall' }} border="bottom">
+      <Box pad={{ bottom: 'xsmall' }} align="center">
         <SprintHeadingDisplay
           setSelectedSprint={setSelectedSprint}
           selectedSprint={selectedSprint}
