@@ -16,7 +16,7 @@ import {
 } from 'grommet'
 
 import { theme } from './theme'
-import { CreateProjectForm } from './components/CreateProjectForm'
+import { CreateProjectForm } from './components/NewProject/CreateProjectForm'
 import { Calendar as SprintPairingCalendar } from './components/SprintPairing/Calendar'
 import { fetchProjects, createProject, fetchProject } from './api'
 import { Timeline } from './components/SprintPairing/Timeline'
@@ -164,10 +164,7 @@ export default class App extends React.Component<{}, PairingSchedulerAppState> {
                         <MainContent heading={project.name}>
                           {this.state.currentSprint &&
                             this.state.currentSprint.projectId === project.id &&
-                            this.state.project && (
-                              <Timeline project={this.state.project} />
-                            )}
-
+                            this.state.project && <Timeline project={this.state.project} />}
                         </MainContent>
                       </Box>
                     </Tab>
@@ -229,6 +226,6 @@ const getCurrentSprint = (project: Project): Sprint | undefined =>
   )
 const getFirstSprint = (project: Project): Sprint => project.sprints[0]
 
-    // this.state.project && (
-                            //   <SprintPairingCalendar project={this.state.project} />
-                            // )}
+// this.state.project && (
+//   <SprintPairingCalendar project={this.state.project} />
+// )}
