@@ -38,8 +38,12 @@ export default class App extends React.Component<{}, PairingSchedulerAppState> {
     engineers: [],
   }
 
-  componentDidMount() {
-    this.fetchProjectsData()
+  async componentDidMount() {
+    await this.fetchProjectsData()
+    const activeTabIndex = localStorage.getItem('active-tab-index')
+    if (activeTabIndex) {
+      this.handleNavigateTab(parseInt(activeTabIndex))
+    }
   }
 
   fetchProjectsData = async () => {
@@ -114,6 +118,8 @@ export default class App extends React.Component<{}, PairingSchedulerAppState> {
         this.setState({ remote: 'failure' })
       }
     }
+
+    localStorage.setItem('active-tab-index', nextIndex.toString())
   }
 
   render() {
