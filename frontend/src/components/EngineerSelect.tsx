@@ -8,7 +8,8 @@ const prefix = 'Create'
 
 const updateCreateOption = (text: string, options: string[]) => {
   const len = options.length
-  if (options[len - 1].includes(prefix)) {
+
+  if (len && options[len - 1].includes(prefix)) {
     options.pop() // remove Create option before adding an updated one
   }
   // only add the new Create option if the exact string doesn't already exist
@@ -101,7 +102,7 @@ export const EngineerSelect = ({ initialOptions, ...restProps }: EngineerSelectP
       selected={selected}
       options={options}
       onChange={({ option, selected: nextSelected }: { option: string; selected: number[] }) => {
-        if (option.includes(prefix)) {
+        if (option && option.includes(prefix)) {
           allOptions.pop() // remove "Create <search value>" option
           allOptions.push(searchValue)
           setOptions(allOptions)

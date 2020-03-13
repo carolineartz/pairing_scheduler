@@ -79,9 +79,9 @@ export const CreateProjectForm = ({ engineers, onSubmit }: CreateProjectFormProp
             type="number"
           />
           <FormField required name="engineer_names" label="Engineering Team">
-            {engineers.length > 0 && (
+            {engineers && (
               <EngineerSelect
-                initialOptions={engineers.map((eng: Engineer) => eng.name)}
+                initialOptions={!engineers.length ? [] : engineers.map((eng: Engineer) => eng.name)}
                 name="engineer_names"
               />
             )}
