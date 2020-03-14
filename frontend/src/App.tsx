@@ -21,6 +21,7 @@ import { Calendar as SprintPairingCalendar } from './components/SprintPairing/Ca
 import { fetchProjects, createProject, fetchProject } from './api'
 import { Timeline } from './components/SprintPairing/Timeline'
 import SelectProject from './SelectProject'
+import { ProjectSelect } from './ProjectSelect'
 
 type PairingSchedulerAppState = {
   remote: RemoteDataStatus
@@ -136,27 +137,7 @@ export default class App extends React.Component<{}, PairingSchedulerAppState> {
           width={{ max: 'medium' }}
         >
           <Image src="sprint-pairing.svg" fit="contain" />
-          <Box direction="row" gap="small">
-            {!this.state.selectProjectOpen && (
-              <Button plain>
-                {({ hover }: {hover: any}) => (
-                  <Box
-                    pad={{ vertical: 'small', horizontal: 'medium' }}
-                    round="xlarge"
-                    background={hover ? 'active' : 'control'}
-                  >
-                    <Text>projects</Text>
-                  </Box>
-                )}
-              </Button>
-            )}
-            <SelectProject
-              projects={this.state.projects}
-              open={this.state.selectProjectOpen}
-              setOpen={(value: boolean) => this.setState({ selectProjectOpen: value })}
-              goToIndex={this.handleNavigateTab}
-            />
-          </Box>
+          <ProjectSelect projects={this.state.projects} goToIndex={this.handleNavigateTab} />
         </Box>
         <ResponsiveContext.Consumer>
           {size => (
