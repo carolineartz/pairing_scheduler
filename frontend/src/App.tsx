@@ -137,7 +137,11 @@ export default class App extends React.Component<{}, PairingSchedulerAppState> {
           width={{ max: 'medium' }}
         >
           <Image src="sprint-pairing.svg" fit="contain" />
-          <ProjectSelect projects={this.state.projects} goToIndex={this.handleNavigateTab} />
+          <ProjectSelect
+            projects={this.state.projects}
+            goToIndex={this.handleNavigateTab}
+            activeIndex={this.state.activeTabIndex}
+          />
         </Box>
         <ResponsiveContext.Consumer>
           {size => (
