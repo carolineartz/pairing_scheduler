@@ -20,6 +20,7 @@ import { CreateProjectForm } from './components/NewProject/CreateProjectForm'
 import { Calendar as SprintPairingCalendar } from './components/SprintPairing/Calendar'
 import { fetchProjects, createProject, fetchProject } from './api'
 import { Timeline } from './components/SprintPairing/Timeline'
+import SelectProject from './SelectProject'
 
 type PairingSchedulerAppState = {
   remote: RemoteDataStatus
@@ -28,6 +29,7 @@ type PairingSchedulerAppState = {
   engineers: Engineer[]
   project?: Project
   currentSprint?: Sprint
+  selectProjectOpen: boolean
 }
 
 export default class App extends React.Component<{}, PairingSchedulerAppState> {
@@ -36,6 +38,7 @@ export default class App extends React.Component<{}, PairingSchedulerAppState> {
     activeTabIndex: 0,
     projects: [],
     engineers: [],
+    selectProjectOpen: false,
   }
 
   async componentDidMount() {
@@ -133,6 +136,27 @@ export default class App extends React.Component<{}, PairingSchedulerAppState> {
           width={{ max: 'medium' }}
         >
           <Image src="sprint-pairing.svg" fit="contain" />
+          <Box direction="row" gap="small">
+            {!this.state.selectProjectOpen && (
+              <Button plain>
+                {({ hover }: {hover: any}) => (
+                  <Box
+                    pad={{ vertical: 'small', horizontal: 'medium' }}
+                    round="xlarge"
+                    background={hover ? 'active' : 'control'}
+                  >
+                    <Text>projects</Text>
+                  </Box>
+                )}
+              </Button>
+            )}
+            <SelectProject
+              projects={this.state.projects}
+              open={this.state.selectProjectOpen}
+              setOpen={(value: boolean) => this.setState({ selectProjectOpen: value })}
+              goToIndex={this.handleNavigateTab}
+            />
+          </Box>
         </Box>
         <ResponsiveContext.Consumer>
           {size => (
