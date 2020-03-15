@@ -6,17 +6,13 @@ import {
   subBusinessDays,
   toDate,
   isFuture,
-
 } from 'date-fns/esm'
 
-import * as dateFns from 'date-fns'
 export type SingleDateRangeObject = {
   startDate: Date
   endDate: Date
   key: string
 }
-
-;(global as any).dateFns = dateFns
 
 export type SequentialDirection = 'backwards' | 'forwards'
 
