@@ -2,31 +2,17 @@
 import * as React from 'react'
 import styled from 'styled-components'
 
-import { Calendar as RDRCalendar } from 'react-date-range'
 import {
   Box,
   Stack,
   Diagram,
   Text,
-  Image,
-  ResponsiveContext,
   DiagramConnectionAnchor,
   DiagramConnectionType,
   TextProps,
 } from 'grommet'
-import { random } from 'lodash'
 
-import { CalendarHeadingDisplay } from './SprintHeadingDisplay'
-
-import {
-  SingleDateRangeObject,
-  getSprintForDate,
-  getCurrentSprint,
-  getFirstSprint,
-  calculateDateRange,
-  getInvalidDates,
-  getNextSprint,
-} from '../../projectDateCalculations'
+import { getCurrentSprint, getNextSprint } from '../../projectDateCalculations'
 import { Engineers } from './Engineers'
 
 type ProjectInfoProps = {
@@ -63,9 +49,7 @@ export const Timeline = (props: ProjectInfoProps) => {
     connection(props.project.sprints[index].id, props.project.sprints[index + 1].id)
   )
 
-  // const currentSprint = getCurrentSprint(props.project)
   const highlightedSprint = getCurrentSprint(props.project) || getNextSprint(props.project)
-  // debugger
 
   const [hoveredName, setHoveredName]: [
     undefined | string,
