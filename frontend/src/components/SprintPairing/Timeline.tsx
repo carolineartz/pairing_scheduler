@@ -12,6 +12,7 @@ import {
   ResponsiveContext,
   DiagramConnectionAnchor,
   DiagramConnectionType,
+  TextProps,
 } from 'grommet'
 import { random } from 'lodash'
 
@@ -24,6 +25,7 @@ import {
   getFirstSprint,
   calculateDateRange,
   getInvalidDates,
+  getNextSprint,
 } from '../../projectDateCalculations'
 import { Engineers } from './Engineers'
 
@@ -61,8 +63,14 @@ export const Timeline = (props: ProjectInfoProps) => {
     connection(props.project.sprints[index].id, props.project.sprints[index + 1].id)
   )
 
-  const currentSprint = getCurrentSprint(props.project)
-  console.log(currentSprint)
+  // const currentSprint = getCurrentSprint(props.project)
+  const highlightedSprint = getCurrentSprint(props.project) || getNextSprint(props.project)
+  // debugger
+
+  const [hoveredName, setHoveredName]: [
+    undefined | string,
+    React.Dispatch<React.SetStateAction<string | undefined>>
+  ] = React.useState()
 
   return (
     <Stack guidingChild={1}>
@@ -77,38 +85,61 @@ export const Timeline = (props: ProjectInfoProps) => {
                 id={markerIdForSprintId(sprint.id)}
                 round="50%"
                 background={
-                  currentSprint && sprint.id === currentSprint.id ? 'accent-2' : 'accent-1'
+                  highlightedSprint && sprint.id === highlightedSprint.id ? 'accent-2' : 'accent-1'
                 }
               ></Box>
             </ConnectionsColumn>
             <PairsColumn justify="center">
               <Box pad="small" direction="row" border="bottom" wrap>
-                {sprint.pairs.map(([eng1, eng2]: [Engineer, Engineer]) => (
+                {sprint.pairs.map(([eng1, eng2]: [Engineer, Engineer], index: number) => (
                   <Engineers
                     imageWidth="20px"
                     imageHeight="20px"
                     key={`${eng1.name}-${eng2.name}`}
-                    context={'pair'}
+                    index={index}
                   >
-                    <Text
-                      weight={currentSprint && sprint.id === currentSprint.id ? 'bold' : 'normal'}
+                    <CustomText
+                      hoveredName={hoveredName}
+                      name={eng1.name}
+                      color={eng1.name === hoveredName ? 'accent-2' : 'dark-1'}
+                      weight={
+                        highlightedSprint && highlightedSprint.id === sprint.id ? 'bold' : 'normal'
+                      }
+                      onMouseEnter={() => setHoveredName(eng1.name)}
+                      onMouseLeave={() => setHoveredName(undefined)}
                     >
-                      {eng1.name}
-                    </Text>
-                    <Text
-                      weight={currentSprint && sprint.id === currentSprint.id ? 'bold' : 'normal'}
+                      <span>{eng1.name}</span>
+                    </CustomText>
+                    <CustomText
+                      hoveredName={hoveredName}
+                      name={eng2.name}
+                      color={eng2.name === hoveredName ? 'accent-2' : 'dark-1'}
+                      weight={
+                        highlightedSprint && highlightedSprint.id === sprint.id ? 'bold' : 'normal'
+                      }
+                      onMouseEnter={() => setHoveredName(eng2.name)}
+                      onMouseLeave={() => setHoveredName(undefined)}
                     >
-                      {eng2.name}
-                    </Text>
+                      <span>{eng2.name}</span>
+                    </CustomText>
                   </Engineers>
                 ))}
                 {sprint.soloEngineer && (
-                  <Engineers imageWidth="20px" imageHeight="20px" context={'solo'}>
-                    <Text
-                      weight={currentSprint && sprint.id === currentSprint.id ? 'bold' : 'normal'}
+                  <Engineers imageWidth="20px" imageHeight="20px">
+                    <CustomText
+                      hoveredName={hoveredName}
+                      name={sprint.soloEngineer.name}
+                      color={sprint.soloEngineer.name === hoveredName ? 'accent-2' : 'dark-1'}
+                      weight={
+                        highlightedSprint && highlightedSprint.id === sprint.id ? 'bold' : 'normal'
+                      }
+                      onMouseEnter={() =>
+                        setHoveredName(sprint.soloEngineer && sprint.soloEngineer.name)
+                      }
+                      onMouseLeave={() => setHoveredName(undefined)}
                     >
-                      {sprint.soloEngineer.name}
-                    </Text>
+                      <span>{sprint.soloEngineer.name}</span>
+                    </CustomText>
                   </Engineers>
                 )}
               </Box>
@@ -119,3 +150,20 @@ export const Timeline = (props: ProjectInfoProps) => {
     </Stack>
   )
 }
+
+type CustomTextProps = TextProps & {
+  hoveredName: undefined | string
+  name: string
+}
+
+const CustomText = styled(Text)<CustomTextProps>`
+  font-family: 'Source Code Pro';
+
+  span {
+    line-height: 0.35em;
+    border-bottom-color: #f986f3ad;
+    display: inline-block;
+    border-bottom-style: solid;
+    border-bottom-width: ${props => (props.name === props.hoveredName ? '6px' : '0')};
+  }
+`

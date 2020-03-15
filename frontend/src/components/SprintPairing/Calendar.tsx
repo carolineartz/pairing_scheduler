@@ -89,14 +89,14 @@ export const Calendar = ({ project }: ProjectInfoProps) => {
         </Box>
         <Box pad={{ top: shouldWrap ? 'medium' : 'none' }} align="start">
           <Box direction="row" wrap>
-            {selectedSprint.pairs.map(([eng1, eng2]: [Engineer, Engineer]) => (
-              <Engineers key={`${eng1.name}-${eng2.name}`} context={'pair'}>
+            {selectedSprint.pairs.map(([eng1, eng2]: [Engineer, Engineer], index: number) => (
+              <Engineers key={`${eng1.name}-${eng2.name}`} index={index}>
                 <Text>{eng1.name}</Text>
                 <Text>{eng2.name}</Text>
               </Engineers>
             ))}
             {selectedSprint.soloEngineer && (
-              <Engineers context={'solo'}>
+              <Engineers>
                 <Text>{selectedSprint.soloEngineer.name}</Text>
               </Engineers>
             )}

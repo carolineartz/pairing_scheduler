@@ -6,31 +6,37 @@ import { Box, Image } from 'grommet'
 type WorkContext = 'solo' | 'pair'
 
 export const getRandomPearPath = (): string => `/pear-${random(1, 6)}.svg`
+const NUM_PEAR_IMAGES = 6
 
 type EngineersProps = {
-  context: WorkContext
   imageWidth?: React.ImgHTMLAttributes<HTMLImageElement>['width']
   imageHeight?: React.ImgHTMLAttributes<HTMLImageElement>['height']
   children: React.ReactNode
+  index?: number
 }
 
 export const Engineers = ({
-  context,
   imageHeight = '50px',
   imageWidth = '50px',
   children,
-}: EngineersProps) => (
-  <Box direction="row" pad="small" height={{ max: 'medium' }}>
-    <Box justify="center">
-      <Image
-        width={imageWidth}
-        height={imageHeight}
-        src={context === 'solo' ? 'apple.svg' : getRandomPearPath()}
-        fit="contain"
-      />
+  index,
+}: EngineersProps) => {
+  let imgSrc
+
+  if (index !== undefined) {
+    imgSrc = `pear-${(index + 1) % NUM_PEAR_IMAGES}.svg`
+  } else {
+    imgSrc = 'apple.svg'
+  }
+
+  return (
+    <Box direction="row" pad="small" height={{ max: 'medium' }}>
+      <Box justify="center">
+        <Image width={imageWidth} height={imageHeight} src={imgSrc} fit="contain" />
+      </Box>
+      <Box pad={{ horizontal: 'small' }} gap="small" justify="center">
+        {children}
+      </Box>
     </Box>
-    <Box pad={{ horizontal: 'small' }} gap="xsmall" justify="center">
-      {children}
-    </Box>
-  </Box>
-)
+  )
+}
