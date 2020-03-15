@@ -1,15 +1,16 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import * as React from 'react'
-
-import { Grommet, Box, Button, Text, Image, Main } from 'grommet'
+import styled from 'styled-components'
 
 import { theme } from './theme'
-import { CreateProjectForm } from './components/NewProject/CreateProjectForm'
-// import { Calendar as SprintPairingCalendar } from './components/SprintPairing/Calendar'
 import { fetchProjects, createProject, fetchProject } from './api'
+import { getCurrentSprint, getFirstSprint } from './projectDateCalculations'
+
+import { Grommet, Box, Button, Text, Image, Main, ResponsiveContext, BoxProps } from 'grommet'
+
+import { CreateProjectForm } from './components/NewProject/CreateProjectForm'
 import { Timeline } from './components/SprintPairing/Timeline'
 import { ProjectSelect } from './ProjectSelect'
-import { getCurrentSprint, getFirstSprint } from './projectDateCalculations'
 
 type PairingSchedulerAppState = {
   remote: RemoteDataStatus
@@ -119,38 +120,58 @@ export default class App extends React.Component<{}, PairingSchedulerAppState> {
   }
 
   render() {
-    // TODO: add a UI for when remoteData is `failure` and when `loading`
     return (
-      <Grommet theme={theme} full={true}>
-        <Box
-          align="center"
-          margin="0 auto"
-          pad={{ bottom: 'medium', top: 'large' }}
-          width={{ max: 'medium' }}
-        >
-          <Image src="sprint-pairing.svg" fit="contain" />
-          <Box pad="medium">
-            <ProjectSelect
-              allProjects={this.state.projects}
-              project={this.state.project}
-              setProject={this.handleSelectProject}
-            />
-          </Box>
-        </Box>
-        {this.state.project ? (
-          <MainContent heading={this.state.project.name}>
-            {this.state.currentSprint &&
-              this.state.currentSprint.projectId === this.state.project.id &&
-              this.state.project && <Timeline project={this.state.project} />}
-          </MainContent>
-        ) : (
-          <MainContent heading="Create New Project">
-            <CreateProjectForm
-              engineers={this.state.engineers}
-              onSubmit={this.handleSubmitCreateProject}
-            />
-          </MainContent>
-        )}
+      <Grommet full theme={theme}>
+        <ResponsiveContext.Consumer>
+          {size => (
+            <LayoutGrid size={size}>
+              <LayoutHeader size={size}>
+                <Box
+                  align="center"
+                  margin="0 auto"
+                  pad={{ bottom: 'medium', top: 'large' }}
+                  width={{ max: 'medium' }}
+                >
+                  <Image src="sprint-pairing.svg" fit="contain" />
+                  <Box pad="medium">
+                    <ProjectSelect
+                      allProjects={this.state.projects}
+                      project={this.state.project}
+                      setProject={this.handleSelectProject}
+                    />
+                  </Box>
+                </Box>
+              </LayoutHeader>
+              <LayoutCreateProject size={size}>
+                <Box
+                  fill="vertical"
+                  align="center"
+                  justify="center"
+                  alignContent="center"
+                  pad="medium"
+                >
+                  <Button label="Create Project" primary />
+                </Box>
+              </LayoutCreateProject>
+              <LayoutMain size={size}>
+                {this.state.project ? (
+                  <MainContent heading={this.state.project.name}>
+                    {this.state.currentSprint &&
+                      this.state.currentSprint.projectId === this.state.project.id &&
+                      this.state.project && <Timeline project={this.state.project} />}
+                  </MainContent>
+                ) : (
+                  <MainContent heading="Create New Project">
+                    <CreateProjectForm
+                      engineers={this.state.engineers}
+                      onSubmit={this.handleSubmitCreateProject}
+                    />
+                  </MainContent>
+                )}
+              </LayoutMain>
+            </LayoutGrid>
+          )}
+        </ResponsiveContext.Consumer>
       </Grommet>
     )
   }
@@ -171,3 +192,29 @@ const MainContent = ({ heading, children }: { heading: string; children: React.R
     </Box>
   </Main>
 )
+
+type ResponsiveContextSize = 'small' | 'medium' | 'large'
+
+type LayoutProps = BoxProps & {
+  size: ResponsiveContextSize | string
+}
+
+const LayoutGrid = styled(Box)<LayoutProps>`
+  display: grid;
+  grid-template-columns: 30% 1fr;
+  grid-template-rows: ${props => (props.size === 'small' ? '20% 10% 1fr' : '30% 1fr')};
+  grid-column-gap: 0px;
+  grid-row-gap: 7px;
+`
+
+const LayoutHeader = styled(Box)<LayoutProps>`
+  grid-area: 1 / 1 / 2 / 3;
+`
+
+const LayoutCreateProject = styled(Box)<LayoutProps>`
+  grid-area: ${props => (props.size === 'small' ? '2 / 1 / 3 / 3' : '1 / 1 / 2 / 2')};
+`
+
+const LayoutMain = styled(Box)<LayoutProps>`
+  grid-area: ${props => (props.size === 'small' ? '3 / 1 / 4 / 4' : '2 / 1 / 3 / 3')};
+`
