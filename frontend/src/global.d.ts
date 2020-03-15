@@ -51,6 +51,8 @@ declare type Project = {
   sprints: Sprint[]
 }
 
+declare type ProjectData = Pick<Project, 'name' | 'id'>
+
 declare type Engineer = {
   name: string
 }

@@ -1,23 +1,11 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import * as React from 'react'
-import styled from 'styled-components'
 
-import {
-  Grommet,
-  Box,
-  Button,
-  Tabs,
-  Tab,
-  Text,
-  Image,
-  Main,
-  ResponsiveContext,
-  TabsProps,
-} from 'grommet'
+import { Grommet, Box, Button, Text, Image, Main } from 'grommet'
 
 import { theme } from './theme'
 import { CreateProjectForm } from './components/NewProject/CreateProjectForm'
-import { Calendar as SprintPairingCalendar } from './components/SprintPairing/Calendar'
+// import { Calendar as SprintPairingCalendar } from './components/SprintPairing/Calendar'
 import { fetchProjects, createProject, fetchProject } from './api'
 import { Timeline } from './components/SprintPairing/Timeline'
 import { ProjectSelect } from './ProjectSelect'
@@ -26,7 +14,7 @@ import { getCurrentSprint, getFirstSprint } from './projectDateCalculations'
 type PairingSchedulerAppState = {
   remote: RemoteDataStatus
   activeTabIndex: number
-  projects: Array<{ name: string; id: number }>
+  projects: ProjectData[]
   engineers: Engineer[]
   project?: Project
   currentSprint?: Sprint
@@ -44,9 +32,16 @@ export default class App extends React.Component<{}, PairingSchedulerAppState> {
 
   async componentDidMount() {
     await this.fetchProjectsData()
-    const activeTabIndex = localStorage.getItem('active-tab-index')
-    if (activeTabIndex) {
-      this.handleNavigateTab(parseInt(activeTabIndex))
+    const savedProject = localStorage.getItem('current-project')
+    if (savedProject) {
+      try {
+        const savedProjectId = JSON.parse(savedProject).id
+        this.handleSelectProject(
+          this.state.projects.find(({ id }: ProjectData) => savedProjectId === id)
+        )
+      } catch (e) {
+        // NoOp
+      }
     }
   }
 
@@ -98,21 +93,19 @@ export default class App extends React.Component<{}, PairingSchedulerAppState> {
     }
   }
 
-  handleNavigateTab = async (nextIndex: number) => {
-    if (nextIndex === 0) {
-      this.fetchProjectsData()
-      this.setState({ activeTabIndex: nextIndex })
+  handleSelectProject = async (project?: ProjectData) => {
+    if (!project) {
+      this.setState({ project })
     } else {
       try {
-        const projectData = await fetchProject(this.state.projects[nextIndex - 1].id)
+        const result = await fetchProject(project.id)
 
-        switch (projectData.remote) {
+        switch (result.remote) {
           case 'success':
             this.setState({
               remote: 'success',
-              project: projectData.data,
-              currentSprint: getCurrentSprint(projectData.data) || getFirstSprint(projectData.data),
-              activeTabIndex: nextIndex,
+              project: result.data,
+              currentSprint: getCurrentSprint(result.data) || getFirstSprint(result.data),
             })
             break
           case 'failure':
@@ -122,8 +115,7 @@ export default class App extends React.Component<{}, PairingSchedulerAppState> {
         this.setState({ remote: 'failure' })
       }
     }
-
-    localStorage.setItem('active-tab-index', nextIndex.toString())
+    localStorage.setItem('current-project', JSON.stringify(project))
   }
 
   render() {
@@ -137,58 +129,28 @@ export default class App extends React.Component<{}, PairingSchedulerAppState> {
           width={{ max: 'medium' }}
         >
           <Image src="sprint-pairing.svg" fit="contain" />
-          <ProjectSelect
-            projects={this.state.projects}
-            goToIndex={this.handleNavigateTab}
-            activeIndex={this.state.activeTabIndex}
-          />
+          <Box pad="medium">
+            <ProjectSelect
+              allProjects={this.state.projects}
+              project={this.state.project}
+              setProject={this.handleSelectProject}
+            />
+          </Box>
         </Box>
-        <ResponsiveContext.Consumer>
-          {size => (
-            <Box pad={{ horizontal: 'large', vertical: 'small' }}>
-              <ProjectListMenu
-                size={size}
-                activeIndex={this.state.activeTabIndex}
-                onActive={this.handleNavigateTab}
-              >
-                <Tab
-                  plain
-                  title={
-                    <Box pad={{ vertical: 'xsmall' }}>
-                      <Button
-                        as="div"
-                        disabled={this.state.activeTabIndex === 0}
-                        primary
-                        onClick={(event: React.MouseEvent) => event.preventDefault()}
-                        label="New Project"
-                      />
-                    </Box>
-                  }
-                >
-                  <MainContent heading="Create New Project">
-                    <CreateProjectForm
-                      engineers={this.state.engineers}
-                      onSubmit={this.handleSubmitCreateProject}
-                    />
-                  </MainContent>
-                </Tab>
-                {this.state.projects.map((project: { id: number; name: string }) => {
-                  return (
-                    <Tab key={`project-${project.id}`} title={project.name}>
-                      <Box margin={{ top: 'medium' }}>
-                        <MainContent heading={project.name}>
-                          {this.state.currentSprint &&
-                            this.state.currentSprint.projectId === project.id &&
-                            this.state.project && <Timeline project={this.state.project} />}
-                        </MainContent>
-                      </Box>
-                    </Tab>
-                  )
-                })}
-              </ProjectListMenu>
-            </Box>
-          )}
-        </ResponsiveContext.Consumer>
+        {this.state.project ? (
+          <MainContent heading={this.state.project.name}>
+            {this.state.currentSprint &&
+              this.state.currentSprint.projectId === this.state.project.id &&
+              this.state.project && <Timeline project={this.state.project} />}
+          </MainContent>
+        ) : (
+          <MainContent heading="Create New Project">
+            <CreateProjectForm
+              engineers={this.state.engineers}
+              onSubmit={this.handleSubmitCreateProject}
+            />
+          </MainContent>
+        )}
       </Grommet>
     )
   }
@@ -209,28 +171,3 @@ const MainContent = ({ heading, children }: { heading: string; children: React.R
     </Box>
   </Main>
 )
-
-// Instead of doing routing for this small challenge, I used tabs. The Grommet tabs don't support vertical out of the box
-// so some adjustments are made. Given more time I would like to improve this approach.
-const ProjectListMenu = styled(Tabs)<TabsProps & { size: string }>`
-  /* flex-direction: row; */
-  flex-direction: ${props => (props.size === 'small' ? 'column' : 'row')};
-  width: 100%;
-
-  /* FIXME: this is ugly */
-  [class*='StyledTabs__StyledTabsHeader'] {
-    flex-direction: column;
-    flex-wrap: nowrap;
-    justify-content: normal;
-    > button:first-child {
-      text-align: center;
-      margin: 0 auto 40px;
-      width: 70%;
-      min-width: 180px;
-    }
-  }
-
-  [class*='StyledTabs__StyledTabPanel'] {
-    flex-grow: 1;
-  }
-`
