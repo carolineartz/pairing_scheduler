@@ -143,14 +143,13 @@ export default class App extends React.Component<{}, PairingSchedulerAppState> {
                 </Box>
               </LayoutHeader>
               <LayoutCreateProject size={size}>
-                <Box
-                  fill="vertical"
-                  align="center"
-                  justify="center"
-                  alignContent="center"
-                  pad="medium"
-                >
-                  <Button label="Create Project" primary />
+                <Box fill="vertical" align="center" justify="center" pad="medium">
+                  <Button
+                    primary
+                    label="Create Project"
+                    disabled={!this.state.project}
+                    onClick={() => this.setState({ project: undefined })}
+                  />
                 </Box>
               </LayoutCreateProject>
               <LayoutMain size={size}>
@@ -200,6 +199,7 @@ type LayoutProps = BoxProps & {
 }
 
 const LayoutGrid = styled(Box)<LayoutProps>`
+  height: 100vh;
   display: grid;
   grid-template-columns: 30% 1fr;
   grid-template-rows: ${props => (props.size === 'small' ? '20% 10% 1fr' : '30% 1fr')};
@@ -217,4 +217,7 @@ const LayoutCreateProject = styled(Box)<LayoutProps>`
 
 const LayoutMain = styled(Box)<LayoutProps>`
   grid-area: ${props => (props.size === 'small' ? '3 / 1 / 4 / 4' : '2 / 1 / 3 / 3')};
+  main {
+    overflow: scroll;
+  }
 `
