@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import * as React from 'react'
 import styled from 'styled-components'
-import { isWithinInterval } from 'date-fns/esm'
+
 import {
   Grommet,
   Box,
@@ -20,8 +20,9 @@ import { CreateProjectForm } from './components/NewProject/CreateProjectForm'
 import { Calendar as SprintPairingCalendar } from './components/SprintPairing/Calendar'
 import { fetchProjects, createProject, fetchProject } from './api'
 import { Timeline } from './components/SprintPairing/Timeline'
-import SelectProject from './SelectProject'
 import { ProjectSelect } from './ProjectSelect'
+import { getCurrentSprint, getFirstSprint } from './projectDateCalculations'
+
 
 type PairingSchedulerAppState = {
   remote: RemoteDataStatus
@@ -234,13 +235,3 @@ const ProjectListMenu = styled(Tabs)<TabsProps & { size: string }>`
     flex-grow: 1;
   }
 `
-
-const getCurrentSprint = (project: Project): Sprint | undefined =>
-  project.sprints.find((sprint: Sprint) =>
-    isWithinInterval(Date.now(), { start: sprint.startDate, end: sprint.endDate })
-  )
-const getFirstSprint = (project: Project): Sprint => project.sprints[0]
-
-// this.state.project && (
-//   <SprintPairingCalendar project={this.state.project} />
-// )}
