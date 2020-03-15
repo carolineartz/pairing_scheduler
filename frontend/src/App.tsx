@@ -23,7 +23,6 @@ import { Timeline } from './components/SprintPairing/Timeline'
 import { ProjectSelect } from './ProjectSelect'
 import { getCurrentSprint, getFirstSprint } from './projectDateCalculations'
 
-
 type PairingSchedulerAppState = {
   remote: RemoteDataStatus
   activeTabIndex: number
