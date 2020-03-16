@@ -182,18 +182,11 @@ export default class App extends React.Component<{}, PairingSchedulerAppState> {
 }
 
 const MainContent = ({ heading, children }: { heading: string; children: React.ReactNode }) => (
-  <Main overflow="visible" pad={{ vertical: 'large' }}>
-    <Box
-      pad={{ bottom: 'xsmall' }}
-      height={{ min: '50px' }}
-      border="bottom"
-      margin={{ bottom: 'medium', left: 'large' }}
-    >
+  <Main overflow="visible" pad="large">
+    <Box height={{ min: '50px' }} border="bottom" margin={{ bottom: 'medium' }}>
       <Text size="xxlarge">{heading}</Text>
     </Box>
-    <Box pad={{ horizontal: 'small', bottom: 'medium' }} margin={{ left: 'large' }}>
-      {children}
-    </Box>
+    <Box>{children}</Box>
   </Main>
 )
 

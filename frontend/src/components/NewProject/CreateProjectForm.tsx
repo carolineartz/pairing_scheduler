@@ -69,7 +69,7 @@ export const CreateProjectForm = ({ engineers, onSubmit }: CreateProjectFormProp
     >
       <FormContentContainer direction="row" wrap>
         <LeftColumn basis={size === 'small' ? '100%' : '50%'} pad={{ right: 'large' }}>
-          <FormField
+          <CustomFormField
             label="Sprint Count"
             name="sprint_count"
             required
@@ -114,3 +114,9 @@ export const CreateProjectForm = ({ engineers, onSubmit }: CreateProjectFormProp
 const FormContentContainer = styled(Box)``
 const LeftColumn = styled(Box)``
 const RightColumn = styled(Box)``
+
+const CustomFormField = styled(FormField)`
+  input {
+    padding-bottom: 18px;
+  }
+`
