@@ -17,7 +17,8 @@ import {
   getCurrentSprint,
   getNextSprint,
   isPastSprint,
-  getLastSprint,
+  sortedSprints,
+  isLastSprint,
 } from '../../projectDateCalculations'
 
 import { Engineers } from './Engineers'
@@ -44,23 +45,16 @@ const connection = (fromSprintId: number, toSprintId: number, color: ColorType):
   anchor,
 })
 
-export const Timeline = (props: ProjectInfoProps) => {
-  props.project.sprints.sort(
-    (a: Sprint, b: Sprint) => b.startDate.getTime() - a.startDate.getTime()
-  )
-  const [, ...sprintsWithConnections] = props.project.sprints.reverse()
-
-  const highlightedSprint = getCurrentSprint(props.project) || getNextSprint(props.project)
+export const Timeline = ({ project }: ProjectInfoProps) => {
+  const sprints = sortedSprints(project.sprints)
+  const [, ...sprintsWithConnections] = sprints
+  const highlightedSprint = getCurrentSprint(project) || getNextSprint(project)
 
   const connectionColor = (toSprint: Sprint): ColorType =>
     highlightedSprint && toSprint.id === highlightedSprint.id ? 'accent-3' : 'accent-1'
 
-  const connections = sprintsWithConnections.map((sprint: Sprint, index: number) =>
-    connection(
-      props.project.sprints[index].id,
-      props.project.sprints[index + 1].id,
-      connectionColor(props.project.sprints[index + 1])
-    )
+  const connections = sprintsWithConnections.map((_sprint: Sprint, index: number) =>
+    connection(sprints[index].id, sprints[index + 1].id, connectionColor(sprints[index + 1]))
   )
 
   const [hoveredName, setHoveredName]: [
@@ -70,12 +64,33 @@ export const Timeline = (props: ProjectInfoProps) => {
 
   const size = React.useContext(ResponsiveContext)
 
-  const lastSprint: Sprint | undefined = getLastSprint(props.project)
+  const isHighlightedSprint = (sprint: Sprint) =>
+    Boolean(highlightedSprint && highlightedSprint.id === sprint.id)
+
+  const EngineerName = ({
+    name,
+    highlightedName,
+    highlightedSprint,
+  }: {
+    name: string
+    highlightedName: boolean
+    highlightedSprint: boolean
+  }) => (
+    <CustomText
+      highlighted={highlightedName}
+      weight={highlightedSprint ? 'bold' : 'normal'}
+      onMouseEnter={() => setHoveredName(name)}
+      onMouseLeave={() => setHoveredName(undefined)}
+    >
+      <span>{name}</span>
+    </CustomText>
+  )
+
   return (
     <Stack guidingChild={1}>
-      <Diagram key={`project-stack-diagram-${props.project.id}`} connections={connections} />
-      <Box key={`project-stack-content-${props.project.id}`}>
-        {props.project.sprints.map((sprint: Sprint, index: number) => (
+      <Diagram key={`project-stack-diagram-${project.id}`} connections={connections} />
+      <Box key={`project-stack-content-${project.id}`}>
+        {sprints.map((sprint: Sprint, index: number) => (
           <SprintRowWrapper
             direction="row"
             gap="medium"
@@ -85,7 +100,7 @@ export const Timeline = (props: ProjectInfoProps) => {
           >
             <TimelineConnector
               size={size}
-              highlight={highlightedSprint ? highlightedSprint.id === sprint.id : false}
+              highlight={isHighlightedSprint(sprint)}
               sprint={sprint}
               title={`Sprint ${(index + 1).toString()}`}
             />
@@ -97,7 +112,7 @@ export const Timeline = (props: ProjectInfoProps) => {
               <Box
                 pad="small"
                 direction="row"
-                border={lastSprint && lastSprint.id === sprint.id ? undefined : 'bottom'}
+                border={!isLastSprint(project, sprint) && 'bottom'}
                 wrap
               >
                 {sprint.pairs.map(([eng1, eng2]: [Engineer, Engineer], index: number) => (
@@ -107,48 +122,31 @@ export const Timeline = (props: ProjectInfoProps) => {
                     key={`${eng1.name}-${eng2.name}`}
                     index={index}
                   >
-                    <CustomText
-                      hoveredName={hoveredName}
+                    <EngineerName
                       name={eng1.name}
-                      color={eng1.name === hoveredName ? 'accent-2' : 'dark-1'}
-                      weight={
-                        highlightedSprint && highlightedSprint.id === sprint.id ? 'bold' : 'normal'
-                      }
-                      onMouseEnter={() => setHoveredName(eng1.name)}
-                      onMouseLeave={() => setHoveredName(undefined)}
-                    >
-                      <span>{eng1.name}</span>
-                    </CustomText>
-                    <CustomText
-                      hoveredName={hoveredName}
+                      highlightedName={eng1.name === hoveredName}
+                      highlightedSprint={Boolean(
+                        highlightedSprint && highlightedSprint.id === sprint.id
+                      )}
+                    />
+                    <EngineerName
                       name={eng2.name}
-                      color={eng2.name === hoveredName ? 'accent-2' : 'dark-1'}
-                      weight={
-                        highlightedSprint && highlightedSprint.id === sprint.id ? 'bold' : 'normal'
-                      }
-                      onMouseEnter={() => setHoveredName(eng2.name)}
-                      onMouseLeave={() => setHoveredName(undefined)}
-                    >
-                      <span>{eng2.name}</span>
-                    </CustomText>
+                      highlightedName={eng2.name === hoveredName}
+                      highlightedSprint={Boolean(
+                        highlightedSprint && highlightedSprint.id === sprint.id
+                      )}
+                    />
                   </Engineers>
                 ))}
                 {sprint.soloEngineer && (
                   <Engineers imageWidth="20px" imageHeight="20px">
-                    <CustomText
-                      hoveredName={hoveredName}
+                    <EngineerName
                       name={sprint.soloEngineer.name}
-                      color={sprint.soloEngineer.name === hoveredName ? 'accent-2' : 'dark-1'}
-                      weight={
-                        highlightedSprint && highlightedSprint.id === sprint.id ? 'bold' : 'normal'
-                      }
-                      onMouseEnter={() =>
-                        setHoveredName(sprint.soloEngineer && sprint.soloEngineer.name)
-                      }
-                      onMouseLeave={() => setHoveredName(undefined)}
-                    >
-                      <span>{sprint.soloEngineer.name}</span>
-                    </CustomText>
+                      highlightedName={sprint.soloEngineer.name === hoveredName}
+                      highlightedSprint={Boolean(
+                        highlightedSprint && highlightedSprint.id === sprint.id
+                      )}
+                    />
                   </Engineers>
                 )}
               </Box>
@@ -181,7 +179,6 @@ const TimelineConnector = ({
         align="center"
         highlight={highlight}
         id={markerIdForSprintId(sprint.id)}
-        width={{ min: '150px', max: '150px' }}
       >
         <MonospaceText size="small">{title}</MonospaceText>
         <MonospaceText size="xsmall">
@@ -209,11 +206,6 @@ const TimelineConnector = ({
   </ConnectionsColumn>
 )
 
-type CustomTextProps = TextProps & {
-  hoveredName: undefined | string
-  name: string
-}
-
 const MonospaceText = styled(Text)`
   font-family: 'Source Code Pro';
   white-space: pre;
@@ -224,13 +216,17 @@ const SprintRowTitleBox = styled(Box)<BoxProps & { highlight: boolean }>`
   color: ${props => props.color === 'white' && 'white'};
 `
 
+type CustomTextProps = TextProps & {
+  highlighted: boolean
+}
+
 const CustomText = styled(MonospaceText)<CustomTextProps>`
   span {
     line-height: 0.35em;
     border-bottom-color: #f986f3ad;
     display: inline-block;
     border-bottom-style: solid;
-    border-bottom-width: ${props => (props.name === props.hoveredName ? '6px' : '0')};
+    border-bottom-width: ${props => (props.highlighted ? '6px' : '0')};
   }
 `
 

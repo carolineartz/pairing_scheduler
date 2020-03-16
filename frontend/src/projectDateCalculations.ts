@@ -17,13 +17,18 @@ export type SingleDateRangeObject = {
 
 export type SequentialDirection = 'backwards' | 'forwards'
 
-export const getCurrentSprint = (project: Project): Sprint | undefined =>
-  project.sprints.find((sprint: Sprint) => isCurrentSprint(sprint))
-
 export const isPastSprint = (sprint: Sprint): boolean => isPast(sprint.endDate)
 
 export const isCurrentSprint = (sprint: Sprint): boolean =>
   isWithinInterval(toDate(Date.now()), { start: sprint.startDate, end: sprint.endDate })
+
+export const isLastSprint = (project: Project, sprint: Sprint): boolean => {
+  const lastSprint = getLastSprint(project)
+  return Boolean(lastSprint && lastSprint.id === sprint.id)
+}
+
+export const getCurrentSprint = (project: Project): Sprint | undefined =>
+  project.sprints.find((sprint: Sprint) => isCurrentSprint(sprint))
 
 export const getNextSprint = (project: Project): Sprint | undefined => {
   return sortedSprints(project.sprints).find((sprint: Sprint) => isFuture(sprint.startDate))
@@ -32,9 +37,6 @@ export const getFirstSprint = (project: Project): Sprint => project.sprints[0]
 
 export const getLastSprint = (project: Project): Sprint | undefined =>
   sortedSprints(project.sprints)[project.sprints.length - 1]
-
-export const initialSelectedSprint = (project: Project) =>
-  getCurrentSprint(project) || getFirstSprint(project)
 
 export const getSprintForDate = (project: Project, date: Date): Sprint | undefined =>
   project.sprints.find((sprint: Sprint) =>
@@ -52,18 +54,6 @@ export const getInvalidDates = (project: Project): Date[] =>
     start: project.startDate,
     end: project.endDate,
   }).filter((date: Date) => isWeekend(date))
-
-export const getNextSprintInSequence = (
-  project: Project,
-  currentSprint: Sprint,
-  direction: SequentialDirection
-): Sprint => {
-  const dateFn: (date: Date, amount: number) => Date =
-    direction === 'backwards' ? addBusinessDays : subBusinessDays
-  const indexDate: Date = direction === 'forwards' ? currentSprint.endDate : currentSprint.startDate
-
-  return getSprintForDate(project, dateFn(indexDate, 1)) || currentSprint
-}
 
 export const getNextSequentialSprint = (
   project: Project,
