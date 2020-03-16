@@ -16,9 +16,13 @@ type SprintHeadingDisplayProps = {
   project: Project
 }
 
-export const CalendarHeadingDisplay = (props: SprintHeadingDisplayProps) => {
+export const CalendarHeadingDisplay = ({
+  setSelectedSprint,
+  selectedSprint,
+  project,
+}: SprintHeadingDisplayProps) => {
   const onClick = (direction: SequentialDirection) =>
-    props.setSelectedSprint(getNextSequentialSprint(props.project, props.selectedSprint, direction))
+    setSelectedSprint(getNextSequentialSprint(project, selectedSprint, direction))
 
   const formatSprintNumber = (number: number) => number.toString().padStart(2)
 
@@ -28,12 +32,12 @@ export const CalendarHeadingDisplay = (props: SprintHeadingDisplayProps) => {
         <Button icon={<FormPrevious />} onClick={() => onClick('backwards')} />
         <SprintHeadingText weight={700}>
           Sprint&nbsp;
-          {`${formatSprintNumber(indexOfSprint(props.project, props.selectedSprint))}`}
+          {`${formatSprintNumber(indexOfSprint(project, selectedSprint))}`}
         </SprintHeadingText>
         <Button icon={<FormNext />} onClick={() => onClick('forwards')} />
       </Box>
       <Box align="center">
-        <SprintDates sprint={props.selectedSprint} />
+        <SprintDates sprint={selectedSprint} />
       </Box>
     </Box>
   )
