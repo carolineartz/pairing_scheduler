@@ -10,6 +10,7 @@ export const theme: ThemeType = deepFreeze({
       brand: '#81357D',
       'accent-1': '#bd53b8',
       'accent-2': '#500d4d',
+      'accent-3': '#e7bce4',
       focus: '#bd53b8',
     },
     breakpoints: {

@@ -9,10 +9,14 @@ import {
   DiagramConnectionAnchor,
   DiagramConnectionType,
   TextProps,
+  BoxProps,
 } from 'grommet'
 
-import { getCurrentSprint, getNextSprint } from '../../projectDateCalculations'
+import { getCurrentSprint, getNextSprint, isPastSprint } from '../../projectDateCalculations'
+
 import { Engineers } from './Engineers'
+import { ColorType } from 'grommet/utils'
+import { format as formatDate } from 'date-fns/esm'
 
 type ProjectInfoProps = {
   project: Project
@@ -23,20 +27,18 @@ const type: DiagramConnectionType = 'curved'
 
 const markerIdForSprintId = (sprintId: number) => `diagram-marker-${sprintId.toString()}`
 
-const connection = (fromSprintId: number, toSprintId: number): any => ({
+type SprintTimeCategory = 'past' | 'current' | 'future'
+
+const connection = (fromSprintId: number, toSprintId: number, color: ColorType): any => ({
   fromTarget: markerIdForSprintId(fromSprintId),
   toTarget: markerIdForSprintId(toSprintId),
   thickness: 'xxsmall',
-  color: 'brand',
+  color,
   round: true,
   id: `${fromSprintId.toString()}-${toSprintId.toString()}`,
   type,
   anchor,
 })
-
-const ConnectionsColumn = styled(Box)``
-const PairsColumn = styled(Box)``
-const Wrapper = styled(Box)``
 
 export const Timeline = (props: ProjectInfoProps) => {
   props.project.sprints.sort(
@@ -44,11 +46,18 @@ export const Timeline = (props: ProjectInfoProps) => {
   )
   const [, ...sprintsWithConnections] = props.project.sprints.reverse()
 
-  const connections = sprintsWithConnections.map((sprint: Sprint, index: number) =>
-    connection(props.project.sprints[index].id, props.project.sprints[index + 1].id)
-  )
-
   const highlightedSprint = getCurrentSprint(props.project) || getNextSprint(props.project)
+
+  const connectionColor = (toSprint: Sprint): ColorType =>
+    highlightedSprint && toSprint.id === highlightedSprint.id ? 'accent-3' : 'accent-1'
+
+  const connections = sprintsWithConnections.map((sprint: Sprint, index: number) =>
+    connection(
+      props.project.sprints[index].id,
+      props.project.sprints[index + 1].id,
+      connectionColor(props.project.sprints[index + 1])
+    )
+  )
 
   const [hoveredName, setHoveredName]: [
     undefined | string,
@@ -59,18 +68,41 @@ export const Timeline = (props: ProjectInfoProps) => {
     <Stack guidingChild={1}>
       <Diagram key={`project-stack-diagram-${props.project.id}`} connections={connections} />
       <Box key={`project-stack-content-${props.project.id}`}>
-        {props.project.sprints.map((sprint: Sprint) => (
-          <Wrapper direction="row" gap="medium" align="center" key={`sprint-pairings-${sprint.id}`}>
-            <ConnectionsColumn>
+        {props.project.sprints.map((sprint: Sprint, index: number) => (
+          <SprintRowWrapper
+            direction="row"
+            gap="medium"
+            align="center"
+            key={`sprint-pairings-${sprint.id}`}
+            isPast={isPastSprint(sprint)}
+          >
+            <ConnectionsColumn direction="row">
+              <SprintRowTitleBox
+                pad={{ right: "medium" }}
+                align="center"
+                highlight={highlightedSprint ? highlightedSprint.id === sprint.id : false}
+              >
+                <MonospaceText size="small">{`Sprint ${(index + 1).toString()}`}</MonospaceText>
+                <MonospaceText size="xsmall">
+                  {`${formatDate(sprint.startDate, 'MMM dd')} - ${formatDate(
+                    sprint.endDate,
+                    'MMM dd'
+                  )}`}
+                </MonospaceText>
+              </SprintRowTitleBox>
               <Box
                 width="30px"
                 height="30px"
                 id={markerIdForSprintId(sprint.id)}
                 round="50%"
                 background={
-                  highlightedSprint && sprint.id === highlightedSprint.id ? 'accent-2' : 'accent-1'
+                  isPastSprint(sprint)
+                    ? 'accent-3'
+                    : highlightedSprint && sprint.id === highlightedSprint.id
+                    ? 'accent-2'
+                    : 'accent-1'
                 }
-              ></Box>
+              />
             </ConnectionsColumn>
             <PairsColumn justify="center">
               <Box pad="small" direction="row" border="bottom" wrap>
@@ -127,7 +159,7 @@ export const Timeline = (props: ProjectInfoProps) => {
                 )}
               </Box>
             </PairsColumn>
-          </Wrapper>
+          </SprintRowWrapper>
         ))}
       </Box>
     </Stack>
@@ -139,9 +171,15 @@ type CustomTextProps = TextProps & {
   name: string
 }
 
-const CustomText = styled(Text)<CustomTextProps>`
+const MonospaceText = styled(Text)`
   font-family: 'Source Code Pro';
+`
 
+const SprintRowTitleBox = styled(Box)<BoxProps & { highlight: boolean }>`
+  font-weight: ${props => (props.highlight ? 'bold' : 'normal')};
+`
+
+const CustomText = styled(MonospaceText)<CustomTextProps>`
   span {
     line-height: 0.35em;
     border-bottom-color: #f986f3ad;
@@ -149,4 +187,10 @@ const CustomText = styled(Text)<CustomTextProps>`
     border-bottom-style: solid;
     border-bottom-width: ${props => (props.name === props.hoveredName ? '6px' : '0')};
   }
+`
+
+const ConnectionsColumn = styled(Box)``
+const PairsColumn = styled(Box)``
+const SprintRowWrapper = styled(Box)<BoxProps & { isPast: boolean }>`
+  opacity: ${props => (props.isPast ? '0.6' : '1.0')};
 `

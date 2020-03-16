@@ -6,6 +6,7 @@ import {
   subBusinessDays,
   toDate,
   isFuture,
+  isPast,
 } from 'date-fns/esm'
 
 export type SingleDateRangeObject = {
@@ -17,9 +18,12 @@ export type SingleDateRangeObject = {
 export type SequentialDirection = 'backwards' | 'forwards'
 
 export const getCurrentSprint = (project: Project): Sprint | undefined =>
-  project.sprints.find((sprint: Sprint) =>
-    isWithinInterval(toDate(Date.now()), { start: sprint.startDate, end: sprint.endDate })
-  )
+  project.sprints.find((sprint: Sprint) => isCurrentSprint(sprint))
+
+export const isPastSprint = (sprint: Sprint): boolean => isPast(sprint.endDate)
+
+export const isCurrentSprint = (sprint: Sprint): boolean =>
+  isWithinInterval(toDate(Date.now()), { start: sprint.startDate, end: sprint.endDate })
 
 export const getNextSprint = (project: Project): Sprint | undefined => {
   return sortedSprints(project.sprints).find((sprint: Sprint) => isFuture(sprint.startDate))
