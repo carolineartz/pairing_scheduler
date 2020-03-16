@@ -30,7 +30,7 @@ export const Engineers = ({
       <Box justify="center">
         <Image width={imageWidth} height={imageHeight} src={imgSrc} fit="contain" />
       </Box>
-      <Box pad={{ horizontal: 'small' }} gap="small" justify="center">
+      <Box pad={{ horizontal: 'small' }} gap="xsmall" justify="center">
         {children}
       </Box>
     </Box>

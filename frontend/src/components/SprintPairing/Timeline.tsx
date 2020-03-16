@@ -89,7 +89,11 @@ export const Timeline = (props: ProjectInfoProps) => {
               sprint={sprint}
               title={`Sprint ${(index + 1).toString()}`}
             />
-            <PairsColumn flex="grow" justify="center">
+            <PairsColumn
+              flex="grow"
+              justify="center"
+              width={{ max: size === 'small' ? '65%' : size === 'medium' ? '70%' : '75%' }}
+            >
               <Box
                 pad="small"
                 direction="row"
@@ -177,6 +181,7 @@ const TimelineConnector = ({
         align="center"
         highlight={highlight}
         id={markerIdForSprintId(sprint.id)}
+        width={{ min: '150px', max: '150px' }}
       >
         <MonospaceText size="small">{title}</MonospaceText>
         <MonospaceText size="xsmall">

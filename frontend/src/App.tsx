@@ -157,7 +157,7 @@ export default class App extends React.Component<{}, PairingSchedulerAppState> {
                   />
                 </Box>
               </LayoutCreateProject>
-              <LayoutMain size={size}>
+              <LayoutMain size={size} pad="small">
                 {this.state.project ? (
                   <MainContent size={size} heading={this.state.project.name}>
                     {this.state.currentSprint &&
@@ -193,7 +193,6 @@ const MainContent = ({
   <Main
     overflow="visible"
     pad={size === 'small' ? 'medium' : size === 'medium' ? 'large' : 'xlarge'}
-    // width={{ max: '900px' }}
   >
     <Box height={{ min: '50px' }} border="bottom" margin={{ bottom: 'medium' }}>
       <Text size="xxlarge">{heading}</Text>

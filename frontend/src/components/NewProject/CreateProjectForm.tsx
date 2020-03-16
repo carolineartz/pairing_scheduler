@@ -104,7 +104,7 @@ export const CreateProjectForm = ({ engineers, onSubmit }: CreateProjectFormProp
           </FormField>
         </RightColumn>
       </FormContentContainer>
-      <Box align="start" margin={{ top: 'medium' }}>
+      <Box align="start" margin={{ top: 'medium' }} pad={{ bottom: 'large' }}>
         <Button type="submit" label="Create" primary />
       </Box>
     </Form>
