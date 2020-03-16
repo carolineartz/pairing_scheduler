@@ -119,7 +119,8 @@ export default class App extends React.Component<{}, PairingSchedulerAppState> {
     localStorage.setItem('current-project', JSON.stringify(project))
   }
 
-  handleClickCreateProject = () => {
+  handleClickCreateProject = async () => {
+    await this.fetchProjectsData()
     this.setState({ project: undefined })
     localStorage.removeItem('current-project')
   }
