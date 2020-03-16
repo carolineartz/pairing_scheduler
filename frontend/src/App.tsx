@@ -159,13 +159,13 @@ export default class App extends React.Component<{}, PairingSchedulerAppState> {
               </LayoutCreateProject>
               <LayoutMain size={size}>
                 {this.state.project ? (
-                  <MainContent heading={this.state.project.name}>
+                  <MainContent size={size} heading={this.state.project.name}>
                     {this.state.currentSprint &&
                       this.state.currentSprint.projectId === this.state.project.id &&
                       this.state.project && <Timeline project={this.state.project} />}
                   </MainContent>
                 ) : (
-                  <MainContent heading="Create New Project">
+                  <MainContent size={size} heading="Create New Project">
                     <CreateProjectForm
                       engineers={this.state.engineers}
                       onSubmit={this.handleSubmitCreateProject}
@@ -181,8 +181,20 @@ export default class App extends React.Component<{}, PairingSchedulerAppState> {
   }
 }
 
-const MainContent = ({ heading, children }: { heading: string; children: React.ReactNode }) => (
-  <Main overflow="visible" pad="large">
+const MainContent = ({
+  heading,
+  children,
+  size,
+}: {
+  heading: string
+  children: React.ReactNode
+  size: string
+}) => (
+  <Main
+    overflow="visible"
+    pad={size === 'small' ? 'medium' : size === 'medium' ? 'large' : 'xlarge'}
+    // width={{ max: '900px' }}
+  >
     <Box height={{ min: '50px' }} border="bottom" margin={{ bottom: 'medium' }}>
       <Text size="xxlarge">{heading}</Text>
     </Box>

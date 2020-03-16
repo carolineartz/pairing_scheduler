@@ -30,6 +30,9 @@ export const getNextSprint = (project: Project): Sprint | undefined => {
 }
 export const getFirstSprint = (project: Project): Sprint => project.sprints[0]
 
+export const getLastSprint = (project: Project): Sprint | undefined =>
+  sortedSprints(project.sprints)[project.sprints.length - 1]
+
 export const initialSelectedSprint = (project: Project) =>
   getCurrentSprint(project) || getFirstSprint(project)
 
