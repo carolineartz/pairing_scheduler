@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import * as React from 'react'
 import styled from 'styled-components'
 
@@ -43,7 +42,7 @@ export const Timeline = (props: ProjectInfoProps) => {
   props.project.sprints.sort(
     (a: Sprint, b: Sprint) => b.startDate.getTime() - a.startDate.getTime()
   )
-  const [_lastSprint, ...sprintsWithConnections] = props.project.sprints.reverse()
+  const [, ...sprintsWithConnections] = props.project.sprints.reverse()
 
   const connections = sprintsWithConnections.map((sprint: Sprint, index: number) =>
     connection(props.project.sprints[index].id, props.project.sprints[index + 1].id)

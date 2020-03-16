@@ -12,6 +12,7 @@ import {
 
 import { Box, Button, Form, FormField, ResponsiveContext } from 'grommet'
 import { EngineerSelect } from './EngineerSelect'
+import styled from 'styled-components'
 
 type CreateProjectFormProps = {
   engineers: Engineer[]
@@ -29,12 +30,13 @@ type CreateProjectFormProps = {
 export const CreateProjectForm = ({ engineers, onSubmit }: CreateProjectFormProps) => {
   const startOfValidDates = startOfWeek(startOfToday())
   const endOfValidDates = addToDate(startOfValidDates, { months: 6 })
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const invalidDates = eachDayOfInterval({
     start: startOfValidDates,
     end: endOfValidDates,
   }).filter((date: Date) => !isMonday(date))
+
   const [date, setDate] = React.useState(null as any)
+
   const submitData = ({
     engineer_names,
     sprint_count,
@@ -65,11 +67,8 @@ export const CreateProjectForm = ({ engineers, onSubmit }: CreateProjectFormProp
       onReset={(event: React.SyntheticEvent) => console.log(event)}
       onSubmit={({ value }: any) => onSubmit(submitData(value))}
     >
-      <Box direction="row" wrap>
-        <Box
-          basis={['medium', 'small', 'xsmall'].includes(size) ? '100%' : '50%'}
-          pad={{ right: 'large' }}
-        >
+      <FormContentContainer direction="row" wrap>
+        <LeftColumn basis={size === 'small' ? '100%' : '50%'} pad={{ right: 'large' }}>
           <FormField
             label="Sprint Count"
             name="sprint_count"
@@ -78,16 +77,6 @@ export const CreateProjectForm = ({ engineers, onSubmit }: CreateProjectFormProp
             placeholder={<span>Enter the number of sprints to schedule...</span>}
             type="number"
           />
-          <FormField required name="engineer_names" label="Engineering Team">
-            {engineers && (
-              <EngineerSelect
-                initialOptions={!engineers.length ? [] : engineers.map((eng: Engineer) => eng.name)}
-                name="engineer_names"
-              />
-            )}
-          </FormField>
-        </Box>
-        <Box>
           <FormField required={!date} label="Start Date">
             <Box align="start">
               <CustomCalendar
@@ -98,11 +87,30 @@ export const CreateProjectForm = ({ engineers, onSubmit }: CreateProjectFormProp
               />
             </Box>
           </FormField>
-        </Box>
-      </Box>
+        </LeftColumn>
+        <RightColumn basis={size === 'small' ? '100%' : '50%'}>
+          <FormField required name="engineer_names" label="Engineering Team">
+            <EngineerSelect
+              key={
+                engineers
+                  ? engineers.length === 0
+                    ? 'engineers-select-empty'
+                    : 'engineers-select-none'
+                  : 'engineers-select'
+              }
+              initialOptions={!engineers ? [] : engineers.map((eng: Engineer) => eng.name)}
+              name="engineer_names"
+            />
+          </FormField>
+        </RightColumn>
+      </FormContentContainer>
       <Box align="start" margin={{ top: 'medium' }}>
         <Button type="submit" label="Create" primary />
       </Box>
     </Form>
   )
 }
+
+const FormContentContainer = styled(Box)``
+const LeftColumn = styled(Box)``
+const RightColumn = styled(Box)``

@@ -119,6 +119,11 @@ export default class App extends React.Component<{}, PairingSchedulerAppState> {
     localStorage.setItem('current-project', JSON.stringify(project))
   }
 
+  handleClickCreateProject = () => {
+    this.setState({ project: undefined })
+    localStorage.removeItem('current-project')
+  }
+
   render() {
     return (
       <Grommet full theme={theme}>
@@ -148,7 +153,7 @@ export default class App extends React.Component<{}, PairingSchedulerAppState> {
                     primary
                     label="Create Project"
                     disabled={!this.state.project}
-                    onClick={() => this.setState({ project: undefined })}
+                    onClick={this.handleClickCreateProject}
                   />
                 </Box>
               </LayoutCreateProject>
